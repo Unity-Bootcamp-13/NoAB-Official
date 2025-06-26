@@ -6,7 +6,7 @@ public class TouchPad : MonoBehaviour
     [SerializeField] private RectTransform _stick;
     [SerializeField] private RectTransform _touchPadBackground;
     [SerializeField] private PlayerMovement _player;
-    [SerializeField] private const float _maxDragRadius = 120.0f;
+    [SerializeField] private const float MAX_DRAG_RADIUS = 120.0f;
 
     private Vector3 _touchPadInitialPos;
     private Vector3 _stickStartPos;
@@ -55,11 +55,11 @@ public class TouchPad : MonoBehaviour
             // 스틱 위치를 패드 내부로 제한
             Vector3 fingerDeltaPos = mousePosition - _stickStartPos;
 
-            if (fingerDeltaPos.sqrMagnitude > _maxDragRadius * _maxDragRadius)
+            if (fingerDeltaPos.sqrMagnitude > MAX_DRAG_RADIUS * MAX_DRAG_RADIUS)
             {
                 fingerDeltaPos.Normalize();
 
-                _stick.position = _stickStartPos + fingerDeltaPos * _maxDragRadius;
+                _stick.position = _stickStartPos + fingerDeltaPos * MAX_DRAG_RADIUS;
             }
             else
             {

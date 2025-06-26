@@ -2,13 +2,14 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private const int playerSpeed = 10;
+    [SerializeField] private const int PLAYER_SPEED = 10;
 
-    private float inputHorizontal, inputVertical;
+    private float _inputHorizontal;
+    private float _inputVertical;
     public void OnStickChanged(Vector2 stickPos)
     {
-        inputHorizontal = stickPos.x;
-        inputVertical = stickPos.y;
+        _inputHorizontal = stickPos.x;
+        _inputVertical = stickPos.y;
     }
 
     private void Update()
@@ -24,8 +25,8 @@ public class PlayerMovement : MonoBehaviour
             forward.y = 0f;
             right.y = 0f;
 
-            Vector3 moveDir = (right * inputHorizontal + forward * inputVertical).normalized;
-            playerRigidbody.MovePosition(transform.position + moveDir * playerSpeed * Time.deltaTime);
+            Vector3 moveDir = (right * _inputHorizontal + forward * _inputVertical).normalized;
+            playerRigidbody.MovePosition(transform.position + moveDir * PLAYER_SPEED * Time.deltaTime);
         }
     }
 }
