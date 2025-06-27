@@ -1,49 +1,49 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class CameraRotate : MonoBehaviour
 {
     [SerializeField] private Transform _playerTransform;
+    [SerializeField] private float _rotateSensitivity;
 
-    private Vector3 _startMousePosition;
-    private const float ROTATE_SPEED = 5.0f;
-    private float _screenCenterPosition;
-    private float _rotHorizontal;
-    private float _rotVertical;
-    private bool _isDragging = false;
+    private Dictionary<int, Vector2> _lastTouchPos = new Dictionary<int, Vector2>();
+    private float _rotateHorizontal;
+    private float _rotateVertical;
 
 
-    private void Start()
+    private void Update()
     {
-        _screenCenterPosition = Screen.width / 2;
-    }
-
-
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
+        foreach (var touch in Touchscreen.current.touches)
         {
-            if (Input.mousePosition.x > _screenCenterPosition)
+            int id = touch.touchId.ReadValue();
+            Vector2 _currentTouchPos = touch.position.ReadValue();
+
+            if (touch.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Ended ||
+                touch.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Canceled)
             {
-                _startMousePosition = Input.mousePosition;
-                _isDragging = true;
+                _lastTouchPos.Remove(id);
+                continue;
             }
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            _isDragging = false;
-        }
 
-        if (_isDragging)
-        {
-            Vector3 delta = Input.mousePosition - _startMousePosition;
-            _startMousePosition = Input.mousePosition;
+            if (_currentTouchPos.x < Screen.width / 3f)
+                continue;
 
-            _rotHorizontal += delta.x * ROTATE_SPEED * Time.deltaTime;
-            _rotVertical += delta.y * ROTATE_SPEED * Time.deltaTime;
-            _rotVertical = Mathf.Clamp(_rotVertical, -45, 45);
+            if (!_lastTouchPos.ContainsKey(id))
+            {
+                _lastTouchPos[id] = _currentTouchPos;
+                continue;
+            }
 
-            _playerTransform.eulerAngles = new Vector3(0, _rotHorizontal, 0);
-            this.transform.localEulerAngles = new Vector3(-_rotVertical, 0, 0);
+            Vector2 _deltaPos = _currentTouchPos - _lastTouchPos[id];
+            _lastTouchPos[id] = _currentTouchPos;
+
+            _rotateHorizontal += _deltaPos.x * _rotateSensitivity;
+            _rotateVertical -= _deltaPos.y * _rotateSensitivity;
+            _rotateVertical = Mathf.Clamp(_rotateVertical, -40f, 40f);
+
+            _playerTransform.eulerAngles = new Vector3(0f, _rotateHorizontal, 0f);
+            transform.localEulerAngles = new Vector3(_rotateVertical, 0f, 0f);
         }
     }
 }
