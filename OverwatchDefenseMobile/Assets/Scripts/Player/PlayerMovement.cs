@@ -1,32 +1,37 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private const int PLAYER_SPEED = 10;
+    [SerializeField] private float _moveSpeed;
 
-    private float _inputHorizontal;
-    private float _inputVertical;
-    public void OnStickChanged(Vector2 stickPos)
+    private Rigidbody _playerRb;
+    private Vector3 _moveDir;
+    private Vector2 _inputVector;
+
+
+    private void Start()
     {
-        _inputHorizontal = stickPos.x;
-        _inputVertical = stickPos.y;
+        _playerRb = GetComponent<Rigidbody>();
     }
 
-    private void Update()
+
+    private void FixedUpdate()
     {
-        Rigidbody playerRigidbody = GetComponent<Rigidbody>();
+        _playerRb.linearVelocity = _moveDir * _moveSpeed;
+    }
 
-        if (playerRigidbody != null)
-        {
-            Vector3 forward = Camera.main.transform.forward;
-            Vector3 right = Camera.main.transform.right;
 
-            // 카메라가 바라보는 방향이 상하로 틀어져있을 수 있으니 y값은 0으로 만듦
-            forward.y = 0f;
-            right.y = 0f;
+    public void OnMove(InputValue Input)
+    {
+        _inputVector = Input.Get<Vector2>();
 
-            Vector3 moveDir = (right * _inputHorizontal + forward * _inputVertical).normalized;
-            playerRigidbody.MovePosition(transform.position + moveDir * PLAYER_SPEED * Time.deltaTime);
-        }
+        Vector3 forward = Camera.main.transform.forward;
+        Vector3 right = Camera.main.transform.right;
+        // 카메라가 바라보는 방향이 상하로 틀어져있을 수 있으니 y값은 0으로 만듦
+        forward.y = 0f;
+        right.y = 0f;
+
+        _moveDir = (right * _inputVector.x + forward * _inputVector.y).normalized;
     }
 }
