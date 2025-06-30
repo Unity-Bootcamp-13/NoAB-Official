@@ -3,35 +3,33 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    [SerializeField] private GameObject basePoint;
     [SerializeField] private GameObject[] spawnPoint;
+    [SerializeField] private ZomnicPoolManager zomnicPoolManager;
 
-    private EnemyPoolManager _enemyPoolManager;
+    [Tooltip("Time from the last monster spawn to the start of the next wave")]
+    [SerializeField] private float waveTimer = 15f;
 
-    private float _waveTimer = 20f;
     private int _waveCount = 1;
 
-    private void Update()
+
+    private void Start()
     {
-        _waveTimer += Time.deltaTime;
+        StartCoroutine(WaveCo());
+    }
 
-        if (_waveTimer > 20f)
+    IEnumerator WaveCo()
+    {
+        while (true)
         {
-            int randomSpawnPoint = Random.Range(0, spawnPoint.Length - 1);
+            int idx = Random.Range(0, spawnPoint.Length - 1);
+            yield return StartCoroutine(FiveZomnicSpawnCo(spawnPoint[idx].transform.position));
 
-            StartCoroutine(FiveZomnicSpawn(spawnPoint[randomSpawnPoint].transform.position));
-
-            _waveTimer = 0;
+            yield return new WaitForSeconds(waveTimer);
             _waveCount++;
         }
     }
 
-    public void Inject(EnemyPoolManager enemyPoolManager)
-    {
-        _enemyPoolManager = enemyPoolManager;
-    }
-
-    IEnumerator FiveZomnicSpawn(Vector3 spawnPoint)
+    IEnumerator FiveZomnicSpawnCo(Vector3 spawnPoint)
     {
         int spawnCount = 0;
         float spawnInterval = 1f;
@@ -40,10 +38,7 @@ public class WaveManager : MonoBehaviour
         {
             yield return new WaitForSeconds(spawnInterval);
 
-            GameObject zomnic = _enemyPoolManager.GetEnemy(EnemyType.Zomnic);
-            zomnic.transform.position = spawnPoint;
-            zomnic.GetComponent<Zomnic>().Agent.Warp(spawnPoint);
-            zomnic.GetComponent<Zomnic>().MoveToBasePoint(basePoint.transform.position);
+            GameObject zomnic = zomnicPoolManager.GetZomnic(spawnPoint);
 
             spawnCount++;
         }
