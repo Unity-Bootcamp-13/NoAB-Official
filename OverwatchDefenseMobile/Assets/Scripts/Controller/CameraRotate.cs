@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class CameraRotate : MonoBehaviour
 {
+    [SerializeField] private Camera _camera;
+    [SerializeField] private RectTransform _panelRectTransform;
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private float _rotateSensitivity;
 
@@ -26,14 +28,14 @@ public class CameraRotate : MonoBehaviour
                 continue;
             }
 
-            if (_currentTouchPos.x < Screen.width / 3f)
-                continue;
-
             if (!_lastTouchPos.ContainsKey(id))
             {
                 _lastTouchPos[id] = _currentTouchPos;
                 continue;
             }
+
+            if (!RectTransformUtility.RectangleContainsScreenPoint(_panelRectTransform, _currentTouchPos, null))
+                continue;
 
             Vector2 _deltaPos = _currentTouchPos - _lastTouchPos[id];
             _lastTouchPos[id] = _currentTouchPos;
@@ -43,7 +45,7 @@ public class CameraRotate : MonoBehaviour
             _rotateVertical = Mathf.Clamp(_rotateVertical, -40f, 40f);
 
             _playerTransform.eulerAngles = new Vector3(0f, _rotateHorizontal, 0f);
-            transform.localEulerAngles = new Vector3(_rotateVertical, 0f, 0f);
+            _camera.transform.localEulerAngles = new Vector3(_rotateVertical, 0f, 0f);
         }
     }
 }
