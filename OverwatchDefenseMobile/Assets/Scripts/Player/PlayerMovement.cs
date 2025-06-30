@@ -1,19 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
+    [SerializeField] private Rigidbody _playerRb;
 
-    private Rigidbody _playerRb;
     private Vector3 _moveDir;
     private Vector2 _inputVector;
-
-
-    private void Start()
-    {
-        _playerRb = GetComponent<Rigidbody>();
-    }
 
 
     private void FixedUpdate()
