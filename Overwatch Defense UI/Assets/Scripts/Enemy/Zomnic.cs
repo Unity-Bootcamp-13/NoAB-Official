@@ -7,12 +7,14 @@ public class Zomnic : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Vector3 basePoint;
 
-    public NavMeshAgent Agent { get { return agent; } }
+    [Header("Zomnic base info")]
+    [SerializeField] int hp = 200;
 
+    public int HP { get { return hp; } }
 
     private void OnEnable()
     {
-        // To Do : HP reset
+        hp = 200;
         MoveToBasePoint();
     }
 

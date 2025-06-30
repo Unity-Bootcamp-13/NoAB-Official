@@ -13,8 +13,10 @@ public class ZomnicPoolManager : MonoBehaviour
     {
         zomnicPool = new ObjectPool<GameObject>(
             createFunc: () => {
-                var go = Instantiate(zomnicPrefab, transform);
+                GameObject go = Instantiate(zomnicPrefab, transform);
                 go.SetActive(false);
+                ZomnicController ctrl = go.GetComponent<ZomnicController>();
+                ctrl.InjectPoolManager(this);
                 return go;
             },
             actionOnRelease: obj => obj.SetActive(false),
@@ -23,7 +25,13 @@ public class ZomnicPoolManager : MonoBehaviour
         );
 
         for (int i = 0; i < initialSize; i++)
-            zomnicPool.Release(Instantiate(zomnicPrefab, transform));
+        {
+            GameObject go = Instantiate(zomnicPrefab, transform);
+            ZomnicController ctrl = go.GetComponent<ZomnicController>();
+            ctrl.InjectPoolManager(this);
+
+            zomnicPool.Release(go);
+        }
     }
 
     public GameObject GetZomnic(Vector3 spawnPoint)
