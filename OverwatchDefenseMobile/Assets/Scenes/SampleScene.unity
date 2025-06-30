@@ -1111,7 +1111,7 @@ GameObject:
   - component: {fileID: 2010808055}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1199,7 +1199,7 @@ Transform:
   m_GameObject: {fileID: 2010808054}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.102, y: -0.256, z: 0.884}
+  m_LocalPosition: {x: 7.102, y: 1.36, z: 0.884}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1303,8 +1303,9 @@ GameObject:
   - component: {fileID: 1130661843960306871}
   - component: {fileID: 1130661843960306874}
   - component: {fileID: 1130661843960306873}
-  - component: {fileID: 1130661843960306872}
   - component: {fileID: 1130661843960306875}
+  - component: {fileID: 1130661843960306872}
+  - component: {fileID: 1130661843960306876}
   m_Layer: 0
   m_Name: Cassidy
   m_TagString: Untagged
@@ -1554,6 +1555,20 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1130661843960306876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358944746966074893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d80e141aff156c544a657e986cf98606, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _characterSkillSet: {fileID: 11400000, guid: 427333a33554e5b4fbb1418fd0f7a127, type: 2}
+  _camera: {fileID: 330585545}
 --- !u!4 &1240626315901333437
 Transform:
   m_ObjectHideFlags: 0
