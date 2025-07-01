@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using UnityEngine.InputSystem.Controls;
 
 public class CameraRotate : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class CameraRotate : MonoBehaviour
 
     private void Update()
     {
-        foreach (var touch in Touchscreen.current.touches)
+        foreach (TouchControl touch in Touchscreen.current.touches)
         {
             int id = touch.touchId.ReadValue();
             Vector2 _currentTouchPos = touch.position.ReadValue();
