@@ -4,34 +4,24 @@ using UnityEngine.Pool;
 public class ZomnicPoolManager : MonoBehaviour
 {
     [SerializeField] private GameObject zomnicPrefab;
-    [SerializeField] private int initialSize = 20;
 
-    IObjectPool<GameObject> zomnicPool;
+    private IObjectPool<GameObject> zomnicPool;
 
 
     void Awake()
     {
         zomnicPool = new ObjectPool<GameObject>(
-            createFunc: () => {
+            createFunc: () => 
+            {
                 GameObject go = Instantiate(zomnicPrefab, transform);
                 go.SetActive(false);
-                ZomnicController ctrl = go.GetComponent<ZomnicController>();
-                ctrl.InjectPoolManager(this);
+                Zomnic zomnic = go.GetComponent<Zomnic>();
+                zomnic.InjectPoolManager(this);
                 return go;
             },
             actionOnRelease: obj => obj.SetActive(false),
-            collectionCheck: true,
-            defaultCapacity: initialSize
+            collectionCheck: true
         );
-
-        for (int i = 0; i < initialSize; i++)
-        {
-            GameObject go = Instantiate(zomnicPrefab, transform);
-            ZomnicController ctrl = go.GetComponent<ZomnicController>();
-            ctrl.InjectPoolManager(this);
-
-            zomnicPool.Release(go);
-        }
     }
 
     public GameObject GetZomnic(Vector3 spawnPoint)
