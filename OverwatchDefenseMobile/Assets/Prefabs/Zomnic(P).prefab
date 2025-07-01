@@ -58,13 +58,44 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 368699091d778484298fa0b8a046c15a, type: 3}
       insertIndex: -1
+      addedObject: {fileID: -7734090304702670029}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 368699091d778484298fa0b8a046c15a, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 6040882613475084938}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 368699091d778484298fa0b8a046c15a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -3332104510693815926}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 368699091d778484298fa0b8a046c15a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1268723870520830734}
   m_SourcePrefab: {fileID: 100100000, guid: 368699091d778484298fa0b8a046c15a, type: 3}
 --- !u!1 &3553864863570498940 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 368699091d778484298fa0b8a046c15a, type: 3}
   m_PrefabInstance: {fileID: 4436244173205645357}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &-7734090304702670029
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3553864863570498940}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: bd5b1a3aff5ef7d4db9bcd41f00d015f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!195 &6040882613475084938
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -87,3 +118,35 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &-3332104510693815926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3553864863570498940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d96c63ad7031784db9cb3e84d9fdcfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent: {fileID: 6040882613475084938}
+  basePoint: {x: -14.5, y: 35, z: 64.5}
+  animator: {fileID: -7734090304702670029}
+  maxHp: 200
+--- !u!114 &1268723870520830734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3553864863570498940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92c5f862ffc3237478b6185c04e42a78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zomnic: {fileID: -3332104510693815926}
+  baseRange: 1
+  selfDestructDelay: 2
+  DeadDelay: 4

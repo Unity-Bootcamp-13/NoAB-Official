@@ -38,7 +38,7 @@ public class ZomnicController : MonoBehaviour
 
         if (_reachedBasePoint && (_reachTimer += Time.deltaTime) >= selfDestructDelay)
         {
-            zomnic.Animator.SetTrigger("SelfDestruct");
+            zomnic.Animator.SetTrigger("selfDestruct");
             _hasTriggeredSelfDestruct = true;
         }
     }
