@@ -9,11 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb0266b36a300a6478c589913bab4d15, type: 3}
-  m_Name: skill00_Cassidy
+  m_Script: {fileID: 11500000, guid: 8d5edca93bfa1cc4ba316c2c17c7e5bc, type: 3}
+  m_Name: PeaceKeeper
   m_EditorClassIdentifier: 
-  skill_type: 1
-  starter: {fileID: 11400000, guid: 920dbb0a8becf8247bdc219e74666ebf, type: 2}
-  skill_name: PeaceKeeper
-  cooldown_time: 1
-  atk: 30
