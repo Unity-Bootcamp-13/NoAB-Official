@@ -21,14 +21,14 @@ public class ZomnicController : MonoBehaviour
 
     private void Update()
     {
-        float distance = Vector3.Distance(transform.position, zomnic.BasePoint);
-        zomnic.Animator.SetBool("isMoving", distance > baseRange);
-
         if (zomnic.IsDead)
         {
             zomnic.Animator.SetBool("isDead", true);
             return;
         }
+
+        float distance = Vector3.Distance(transform.position, zomnic.BasePoint);
+        zomnic.Animator.SetBool("isMoving", distance > baseRange);
 
         if (distance <= baseRange)
             _reachedBasePoint = true;

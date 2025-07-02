@@ -30,6 +30,8 @@ public class Zomnic : MonoBehaviour
 
     public void MoveToBasePoint()
     {
+        if (agent == null)
+            return;
         agent.Warp(transform.position);
 
         if (agent.isOnNavMesh == false)
@@ -39,9 +41,14 @@ public class Zomnic : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        Debug.Log("takedamage들어옴");
         if (IsDead)
+        {
+            animator.SetTrigger("dead");
+            Debug.Log("죽음");
             return;
-
+        }
+        Debug.Log("아직안죽어서 데미지받음");
         _currentHp -= damage;
         animator.SetTrigger("hit");
     }
