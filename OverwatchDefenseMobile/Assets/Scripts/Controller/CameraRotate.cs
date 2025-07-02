@@ -17,8 +17,10 @@ public class CameraRotate : MonoBehaviour
 
     private void Update()
     {
+        
         foreach (TouchControl touch in Touchscreen.current.touches)
         {
+            
             int id = touch.touchId.ReadValue();
             Vector2 _currentTouchPos = touch.position.ReadValue();
 
