@@ -14,6 +14,12 @@ public class CameraRotate : MonoBehaviour
     private float _rotateHorizontal;
     private float _rotateVertical;
 
+    private void Start()
+    {
+        _rotateHorizontal = _playerTransform.eulerAngles.y;
+        _rotateVertical = transform.localEulerAngles.x;
+    }
+
 
     private void Update()
     {
