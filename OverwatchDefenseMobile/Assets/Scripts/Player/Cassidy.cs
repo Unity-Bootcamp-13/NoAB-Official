@@ -15,9 +15,9 @@ public class Cassidy : Character
     ProjectileSettings peacekeeper = new ProjectileSettings
     {
         id = 10001,
-        speed = 8000f,
-        lifetime = 0.1f,
-        damage = 70,
+        speed = 30f,
+        lifetime = 5f,
+        damage = 100,
         useGravity = false,
         collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic
     };
@@ -28,7 +28,7 @@ public class Cassidy : Character
         id = 10002,
         speed = 30f,
         lifetime = 5f,
-        damage = 25,
+        damage = 50,
         useGravity = true,
         collisionDetectionMode = CollisionDetectionMode.Discrete
     };
@@ -37,27 +37,7 @@ public class Cassidy : Character
     {
         _rotationY = transform.eulerAngles.y;
     }
-
-
-    IEnumerator C_Rolling(Vector3 rollDirVector)
-    {
-        float Z = rollDirVector.x;
-        float X = rollDirVector.z;
-
-
-        while (X * X + Z * Z < 900)
-        {
-            _playerRb.rotation = Quaternion.Euler(-X, _rotationY, Z);
-
-            X += X;
-            Z -= Z;
-
-            //_playerRb.MovePosition(new Vector3(0, -Time.deltaTime, 0));
-        }
-
-        yield return null;
-    }
-
+      
 
     void Update()
     {
@@ -65,14 +45,13 @@ public class Cassidy : Character
         {
             Skill_Flashbang();
         }
-        if (Keyboard.current.aKey.wasPressedThisFrame)
+        if (Keyboard.current.zKey.wasPressedThisFrame)
         {
             NormalAttack();
         }
         if (Keyboard.current.shiftKey.wasPressedThisFrame)
         {
-            // Skill_CombatRoll();
-            StartCoroutine(C_Rolling());
+            Skill_CombatRoll();           
         }
     }
 
@@ -91,24 +70,16 @@ public class Cassidy : Character
     {
         Vector3 _inputRollVector  = _playerRb.linearVelocity.normalized;
 
-        // 입력이 없으면
+        // 방향 입력이 없으면
         if (_inputRollVector == Vector3.zero)
         {
-            Debug.Log("입력없었다");
-            // 구를 방향 = Camera.main.transform.forward
-            StartCoroutine(C_Rolling(Camera.main.transform.forward)); 
+            Debug.Log("입력없었다");            
+            StartCoroutine(C_Rolling()); 
         }
-        else
+        else // 방향 입력이 있으면            
         {
-            Debug.Log("입력있었따");
-            // 입력이 있으면
-            // 구를 방향 =_moveDir
-            StartCoroutine(C_Rolling(_inputRollVector));
-        }
-
-        // 구르기
-        // 캐서디 rotation x값 조절해주기
-       
+            Debug.Log("입력있었다");
+        }       
     }
 
     public override void Ultimate()
@@ -118,25 +89,52 @@ public class Cassidy : Character
 
     public IEnumerator C_Rolling()
     {
-        Vector3 vector3 = Camera.main.transform.forward;
-        vector3.y = 0f;
+        Vector3 forward = Camera.main.transform.forward;
+        forward.y = 0f;
+        forward.Normalize();
 
         _playerRb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-        float i = 1;
-
-        while (i < 10)
-        {
-            transform.Rotate(new Vector3(5, 0, 0));
-            i++;            
-        }
-        _playerRb.useGravity = true;
-        _playerRb.AddForce(Vector3.down * 200);
-        transform.position += vector3 * 8;
-
-        yield return new WaitForSeconds(2f);
         _playerRb.useGravity = false;
-        transform.Rotate(new Vector3(-50, 0, 0));
-        _playerRb.useGravity = true;
+
+        float rollDuration = 0.25f;
+        float elapsed = 0;
+
+        Quaternion startRotation = transform.rotation;
+        Quaternion endRotation = Quaternion.Euler(30, transform.eulerAngles.y, transform.eulerAngles.z);
+
+
+        Vector3 startPos = transform.position;
+        Vector3 endPos = startPos + forward * 6f;
+
+        Vector3 midPos = (startPos + endPos) / 2f;
+              
+
+
+        while (elapsed < rollDuration)
+        {
+            float t= elapsed / rollDuration;
+
+            transform.position = Vector3.Lerp(startPos, midPos, t); 
+            transform.rotation = Quaternion.Lerp(startRotation, endRotation, t);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        elapsed = 0;
+
+        while (elapsed < rollDuration)
+        {
+            float t = elapsed / rollDuration;
+
+            transform.position = Vector3.Lerp(midPos, endPos, t);
+            transform.rotation = Quaternion.Lerp(endRotation, startRotation, t);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        _playerRb.useGravity = true;        
     }
 }
