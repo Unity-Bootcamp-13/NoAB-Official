@@ -1,7 +1,9 @@
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(NavMeshAgent), typeof(Collider))]
 public class Zomnic : MonoBehaviour
 {
     [SerializeField] private NavMeshAgent agent;
@@ -18,39 +20,71 @@ public class Zomnic : MonoBehaviour
     public int MaxHP { get { return maxHp; } }
     public int CurrentHp { get { return _currentHp; } }
     public Animator Animator { get { return animator; } }
+    public NavMeshAgent Agent { get { return agent; } }
     public bool IsDead => _currentHp <= 0;
     public ZomnicPoolManager ZomnicPoolManager { get { return _zomnicPoolManager; } }
+
+    public bool isSlowed = false;
 
 
     private void OnEnable()
     {
         _currentHp = MaxHP;
-        MoveToBasePoint();
+        animator.Rebind();
+        animator.Update(0f);
+        isSlowed = false;
+
+        StartCoroutine(MoveToBasePoint());
     }
 
-    public void MoveToBasePoint()
+    private void Update()
     {
-        if (agent == null)
-            return;
+        if (isSlowed)
+        {
+            StartCoroutine(TakeFlashbang());
+            isSlowed = false;
+        }
+    }
+
+    public IEnumerator MoveToBasePoint()
+    {
         agent.Warp(transform.position);
 
         if (agent.isOnNavMesh == false)
-            return;
+            StopCoroutine(MoveToBasePoint());
+
+        yield return null;
+        agent.enabled = true;
         agent.SetDestination(basePoint);
     }
 
     public void TakeDamage(int damage)
     {
         Debug.Log("takedamageµé¾î¿È");
+        
+        _currentHp -= damage;
+        Debug.Log($"{_currentHp}");
+
         if (IsDead)
         {
-            animator.SetTrigger("dead");
             Debug.Log("Á×À½");
+            animator.SetTrigger("dead");
             return;
         }
-        Debug.Log("¾ÆÁ÷¾ÈÁ×¾î¼­ µ¥¹ÌÁö¹ÞÀ½");
-        _currentHp -= damage;
+        
+        
+        animator.SetBool("isMoving", false);
+        animator.SetBool("isSelfDestructing", false);
         animator.SetTrigger("hit");
+    }
+
+    public IEnumerator TakeFlashbang()
+    {
+        float currentSpeed = agent.speed;
+
+        agent.speed = 0;
+        yield return new WaitForSeconds(0.9f);
+        agent.speed = currentSpeed;
     }
 
     public void InjectPoolManager(ZomnicPoolManager poolManager)

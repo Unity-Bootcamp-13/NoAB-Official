@@ -18,27 +18,34 @@ public class ZomnicController : MonoBehaviour
     private bool _hasTriggeredSelfDestruct = false;
     private float _selfDestructTimer = 0f;
 
+    private void OnEnable()
+    {
+        _reachedBasePoint = false;
+        _reachTimer = 0f;
+        _hasTriggeredSelfDestruct = false;
+        _selfDestructTimer = 0f;
+    }
 
     private void Update()
     {
-        if (zomnic.IsDead)
-        {
-            zomnic.Animator.SetTrigger("dead");
-            return;
-        }
-
         float distance = Vector3.Distance(transform.position, zomnic.BasePoint);
         zomnic.Animator.SetBool("isMoving", distance > baseRange);
 
         if (distance <= baseRange)
+        {
             _reachedBasePoint = true;
+            zomnic.Animator.SetBool("isMoving", false);
+        }
 
         if (_hasTriggeredSelfDestruct && (_selfDestructTimer += Time.deltaTime) >= DeadDelay)
+        {
             zomnic.Animator.SetTrigger("dead");
+        }
 
         if (_reachedBasePoint && (_reachTimer += Time.deltaTime) >= selfDestructDelay)
         {
-            zomnic.Animator.SetTrigger("selfDestruct");
+            zomnic.Animator.SetBool("isMoving", false);
+            zomnic.Animator.SetBool("isSelfDestructing", true);
             _hasTriggeredSelfDestruct = true;
         }
     }
