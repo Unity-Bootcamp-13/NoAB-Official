@@ -23,7 +23,7 @@ public class ZomnicController : MonoBehaviour
     {
         if (zomnic.IsDead)
         {
-            zomnic.Animator.SetBool("isDead", true);
+            zomnic.Animator.SetTrigger("dead");
             return;
         }
 
@@ -34,7 +34,7 @@ public class ZomnicController : MonoBehaviour
             _reachedBasePoint = true;
 
         if (_hasTriggeredSelfDestruct && (_selfDestructTimer += Time.deltaTime) >= DeadDelay)
-            zomnic.Animator.SetBool("isDead", true);
+            zomnic.Animator.SetTrigger("dead");
 
         if (_reachedBasePoint && (_reachTimer += Time.deltaTime) >= selfDestructDelay)
         {
