@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _moveDir;
     private Vector2 _inputVector;
 
+    public Vector3 InputVector { get { return _inputVector; } }
 
     private void FixedUpdate()
     {

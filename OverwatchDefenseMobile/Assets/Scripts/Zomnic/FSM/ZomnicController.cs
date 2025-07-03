@@ -28,6 +28,13 @@ public class ZomnicController : MonoBehaviour
 
     private void Update()
     {
+        if (zomnic.IsDead)
+        {
+            Debug.Log("Á×À½");
+            zomnic.Animator.SetTrigger("dead");
+            return;
+        }
+
         float distance = Vector3.Distance(transform.position, zomnic.BasePoint);
         zomnic.Animator.SetBool("isMoving", distance > baseRange);
 

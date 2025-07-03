@@ -6,20 +6,27 @@ public class Cassidy : Character
 {
     [SerializeField] private ProjectileManager projectileManager;
     [SerializeField] private Rigidbody _playerRb;
-    
-    private Vector3 _rollDirVector;
-    private float _rotationY;
+    [SerializeField] private PlayerMovement PlayerMovement;
 
+    private const float peacekeeperFireCoolTime = 0.5f;
+    private const float reloadTime = 1.5f;
+    private const float flashbangCoolTime = 5f;
+    private bool flashbangOk = true;
+
+    private bool peacekeeperOk = true;
+    private const int peacekeeperInitBulletCount = 6;
+    private int peacekeeperCurrentBulletCount;
 
     [Header("Peacekeeper")]
     ProjectileSettings peacekeeper = new ProjectileSettings
     {
         id = 10001,
-        speed = 30f,
-        lifetime = 5f,
+        speed = 500,
+        lifetime = 2f,
         damage = 100,
         useGravity = false,
-        collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic
+        useRay = true,
+        collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative
     };
 
     [Header("Flashbang")]
@@ -30,14 +37,14 @@ public class Cassidy : Character
         lifetime = 5f,
         damage = 50,
         useGravity = true,
+        useRay = false,
         collisionDetectionMode = CollisionDetectionMode.Discrete
     };
 
-    private void Awake()
+    private void Start()
     {
-        _rotationY = transform.eulerAngles.y;
+        peacekeeperCurrentBulletCount = peacekeeperInitBulletCount;
     }
-      
 
     void Update()
     {
@@ -55,31 +62,79 @@ public class Cassidy : Character
         }
     }
 
-
     public override void NormalAttack()
     {
+        StartCoroutine(NormalAtk());
+    }
+
+    public IEnumerator NormalAtk()
+    {
+        if (!peacekeeperOk)
+            yield break;
+
         projectileManager.FireProjectile(Camera.main.transform.position, Camera.main.transform.forward, peacekeeper);
+
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        RaycastHit hit;
+                
+
+        if (Physics.Raycast(ray, out hit, 100.0f))
+        {
+            if (hit.collider.CompareTag("Zomnic"))
+            {
+                peacekeeperOk = false;
+                peacekeeperCurrentBulletCount--;
+
+                Debug.Log("총알 발사");
+                Zomnic zomnic = hit.collider.GetComponent<Zomnic>();
+                zomnic.TakeDamage(peacekeeper.damage);
+            }
+        }
+        yield return new WaitForSeconds(peacekeeperFireCoolTime);
+
+        if (peacekeeperCurrentBulletCount <= 0)
+        {
+            Debug.Log("재장전");
+            yield return new WaitForSeconds(reloadTime);
+            peacekeeperCurrentBulletCount = peacekeeperInitBulletCount;
+            Debug.Log("재장전 완료");
+        }
+
+        peacekeeperOk = true;
     }
 
     public void Skill_Flashbang()
     {
+        StartCoroutine(Skill_FB());
+    }
+
+    IEnumerator Skill_FB()
+    {
+        if (!flashbangOk)
+            yield break;
         projectileManager.FireProjectile(Camera.main.transform.position, (Camera.main.transform.forward + Camera.main.transform.up * 0.5f).normalized, flashbang);
+        flashbangOk = false;
+
+        yield return new WaitForSeconds(flashbangCoolTime);
+        flashbangOk = true;
     }
 
     public void Skill_CombatRoll()
     {
-        Vector3 _inputRollVector  = _playerRb.linearVelocity.normalized;
+        Vector3 _inputRollVector  = PlayerMovement.InputVector;
 
-        // 방향 입력이 없으면
-        if (_inputRollVector == Vector3.zero)
+
+        // 방향 입력이 있으면 
+        if (_inputRollVector != Vector3.zero)
         {
-            Debug.Log("입력없었다");            
-            StartCoroutine(C_Rolling()); 
+            
         }
-        else // 방향 입력이 있으면            
+        else // 방향 입력이 없으면      
         {
-            Debug.Log("입력있었다");
-        }       
+            
+            StartCoroutine(C_Rolling());
+
+        }
     }
 
     public override void Ultimate()
