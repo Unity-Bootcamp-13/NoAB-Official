@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class Ult : MonoBehaviour
@@ -14,14 +15,34 @@ public class Ult : MonoBehaviour
     private Queue<GameObject> _shotOrder = new Queue<GameObject>();
     private Camera _camera;
 
+    private bool _buttonDown;
 
     private void Start()
     {
         _camera = Camera.main;
     }
 
+    public void OnPointerDown()
+    {
+        _buttonDown = true;
+        FirstInput();
+    }
+
+    public void OnPointerUp()
+    {
+        _buttonDown = false;
+        FireUltimate();
+    }
+
     void Update()
     {
+        if (_buttonDown)
+        {
+            TrackInput();
+            IncreaseDamage();
+        }
+
+
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             FirstInput();
@@ -41,7 +62,7 @@ public class Ult : MonoBehaviour
 
     private void FirstInput()
     {
-        Debug.Log(1);
+        Debug.Log("처음 누름");
         _enemyDictionary.Clear();
         _distanceList.Clear();
         _targetList.Clear();
@@ -69,7 +90,7 @@ public class Ult : MonoBehaviour
 
     private void TrackInput()
     {
-        Debug.Log(2);
+        Debug.Log("계속 누르고 있음");
         foreach (GameObject enemy in _poolManager.zomnicList)
         {
             if (!enemy.activeSelf) continue;
@@ -83,7 +104,7 @@ public class Ult : MonoBehaviour
 
     private void IncreaseDamage()
     {
-        Debug.Log(3);
+        Debug.Log("데미지 증가중");
         foreach (Zomnic zomnic in _targetList)
         {
             if (!zomnic.GetComponentInChildren<Renderer>().isVisible) continue;
@@ -94,13 +115,17 @@ public class Ult : MonoBehaviour
             }
             if (_damageDictionary[zomnic] >= 200) continue;
 
-            _damageDictionary[zomnic] += 50;
+            float timer = 0;
+            timer += Time.deltaTime;
+            _damageDictionary[zomnic] += timer * 150;
+            if (timer > 2f)
+                _damageDictionary[zomnic] += timer * 150;
         }
     }
 
     public void FireUltimate()
     {
-        Debug.Log(4);
+        Debug.Log("궁극기 발사");
         while (_shotOrder.Count > 0)
         {
             Zomnic zomnic = _shotOrder.Dequeue().GetComponent<Zomnic>();
@@ -110,4 +135,6 @@ public class Ult : MonoBehaviour
             zomnic.TakeDamage((int)_damageDictionary[zomnic]);
         }
     }
+
+    
 }
