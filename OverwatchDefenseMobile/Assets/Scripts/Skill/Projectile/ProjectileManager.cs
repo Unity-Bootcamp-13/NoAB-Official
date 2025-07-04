@@ -6,9 +6,8 @@ public struct ProjectileSettings
     public int id;
     public int damage;
     public float speed;
-    public float lifetime;
+    public float lifetime;    
     public bool useGravity;
-    public bool useRay;
     public CollisionDetectionMode collisionDetectionMode;
 }
 

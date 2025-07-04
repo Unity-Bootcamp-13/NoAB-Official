@@ -4,17 +4,21 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float _moveSpeed;
-    [SerializeField] private Rigidbody _playerRb;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private Rigidbody playerRb;
 
-    private Vector3 _moveDir;
+    internal Vector3 MoveDir;
     private Vector2 _inputVector;
+    private float _initMoveSpeed = 6f;
 
-    public Vector3 InputVector { get { return _inputVector; } }
+    private void Awake()
+    {
+        moveSpeed = _initMoveSpeed;
+    }
 
     private void FixedUpdate()
     {
-        _playerRb.linearVelocity = _moveDir * _moveSpeed;
+        playerRb.linearVelocity = MoveDir * moveSpeed;
     }
 
 
@@ -28,6 +32,6 @@ public class PlayerMovement : MonoBehaviour
         forward.y = 0f;
         right.y = 0f;
 
-        _moveDir = (right * _inputVector.x + forward * _inputVector.y).normalized;
+        MoveDir = (right * _inputVector.x + forward * _inputVector.y).normalized;
     }
 }

@@ -51,7 +51,7 @@ public class CameraRotate : MonoBehaviour
 
             _rotateHorizontal += _deltaPos.x * _rotateSensitivity;
             _rotateVertical -= _deltaPos.y * _rotateSensitivity;
-            _rotateVertical = Mathf.Clamp(_rotateVertical, -40f, 40f);
+            _rotateVertical = Mathf.Clamp(_rotateVertical, -30f, 30f);
 
             _playerTransform.eulerAngles = new Vector3(0f, _rotateHorizontal, 0f);
             _camera.transform.localEulerAngles = new Vector3(_rotateVertical, 0f, 0f);

@@ -34,5 +34,6 @@ public class ZomnicPoolManager : MonoBehaviour
         zomnic.SetActive(true);
         return zomnic;
     }
+
     public void ReturnZomnic(GameObject zomnicPrefab) => zomnicPool.Release(zomnicPrefab);
 }

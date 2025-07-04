@@ -1,66 +1,18 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
 public class Ult : MonoBehaviour
 {
-    [SerializeField] private ZomnicPoolManager _poolManager;
+    [SerializeField] private ZomnicPoolManager zomnicPoolManager;
 
     private Dictionary<float, GameObject> _enemyDictionary = new Dictionary<float, GameObject>();
     private List<Zomnic> _targetList = new List<Zomnic>();
     private Dictionary<Zomnic, float> _damageDictionary = new Dictionary<Zomnic, float>();
     private List<float> _distanceList = new List<float>();
     private Queue<GameObject> _shotOrder = new Queue<GameObject>();
-    private Camera _camera;
+    
 
-    private bool _buttonDown;
-
-    private void Start()
-    {
-        _camera = Camera.main;
-    }
-
-    public void OnPointerDown()
-    {
-        _buttonDown = true;
-        FirstInput();
-    }
-
-    public void OnPointerUp()
-    {
-        _buttonDown = false;
-        FireUltimate();
-    }
-
-    void Update()
-    {
-        if (_buttonDown)
-        {
-            TrackInput();
-            IncreaseDamage();
-        }
-
-
-        if (Keyboard.current.qKey.wasPressedThisFrame)
-        {
-            FirstInput();
-        }
-        
-        if (Keyboard.current.qKey.isPressed)
-        {
-            TrackInput();
-            IncreaseDamage();
-        }
-
-        if (Keyboard.current.qKey.wasReleasedThisFrame)
-        {
-            FireUltimate();
-        }
-    }
-
-    private void FirstInput()
+    public void FirstInput()
     {
         Debug.Log("처음 누름");
         _enemyDictionary.Clear();
@@ -68,12 +20,12 @@ public class Ult : MonoBehaviour
         _targetList.Clear();
         _damageDictionary.Clear();
 
-        foreach (GameObject enemy in _poolManager.zomnicList)
+        foreach (GameObject enemy in zomnicPoolManager.zomnicList)
         {
             if (!enemy.activeSelf) continue;
-            if (!enemy.GetComponentInChildren<Renderer>().isVisible) continue;
+            if (!IsObjectVisibleToCamera(enemy)) continue;
 
-            float distance = Vector3.Distance(_camera.transform.position, enemy.transform.position);
+            float distance = Vector3.Distance(Camera.main.transform.position, enemy.transform.position);
 
             _enemyDictionary.Add(distance, enemy);
             _distanceList.Add(distance);
@@ -88,26 +40,26 @@ public class Ult : MonoBehaviour
         }
     }
 
-    private void TrackInput()
+    public void TrackInput()
     {
         Debug.Log("계속 누르고 있음");
-        foreach (GameObject enemy in _poolManager.zomnicList)
+        foreach (GameObject enemy in zomnicPoolManager.zomnicList)
         {
             if (!enemy.activeSelf) continue;
             if (_targetList.Contains(enemy.gameObject.GetComponent<Zomnic>())) continue;
-            if (!enemy.GetComponentInChildren<Renderer>().isVisible) continue;
+            if (!IsObjectVisibleToCamera(enemy)) continue;
 
             _shotOrder.Enqueue(enemy);
             _targetList.Add(enemy.gameObject.GetComponent<Zomnic>());
         }
     }
 
-    private void IncreaseDamage()
+    public void IncreaseDamage()
     {
         Debug.Log("데미지 증가중");
         foreach (Zomnic zomnic in _targetList)
         {
-            if (!zomnic.GetComponentInChildren<Renderer>().isVisible) continue;
+            if (!IsObjectVisibleToCamera(zomnic)) continue;
             if (!_damageDictionary.ContainsKey(zomnic))
             {
                 _damageDictionary.Add(zomnic, 0);
@@ -130,11 +82,34 @@ public class Ult : MonoBehaviour
         {
             Zomnic zomnic = _shotOrder.Dequeue().GetComponent<Zomnic>();
 
-            if (!zomnic.GetComponentInChildren<Renderer>().isVisible) continue;
+            if (!IsObjectVisibleToCamera(zomnic)) continue;
 
             zomnic.TakeDamage((int)_damageDictionary[zomnic]);
         }
     }
 
-    
+    public bool IsObjectVisibleToCamera(GameObject gameObject)
+    {
+        Vector3 viewportPoint = Camera.main.WorldToViewportPoint(gameObject.transform.position);
+        bool isInCameraView = viewportPoint.x >= 0 && viewportPoint.x <= 1 &&
+                             viewportPoint.y >= 0 && viewportPoint.y <= 1 &&
+                             viewportPoint.z > 0;
+
+        if (!isInCameraView)
+            return false;
+
+        Vector3 directionToTarget = (gameObject.transform.position - Camera.main.transform.position).normalized;
+        float distanceToTarget = Vector3.Distance(Camera.main.transform.position, gameObject.transform.position);
+
+        bool isVisible = !Physics.Raycast(Camera.main.transform.position, directionToTarget, distanceToTarget - 0.1f);
+
+        return isVisible;
+    }
+
+    public bool IsObjectVisibleToCamera(Zomnic zomnic)
+    {
+        GameObject gameObject = zomnic.gameObject;
+
+        return IsObjectVisibleToCamera(gameObject);
+    }
 }

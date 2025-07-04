@@ -49,7 +49,7 @@ public class WaveManager : MonoBehaviour
 
     private Vector3 RandomSpawnPoint()
     {
-        int idx = Random.Range(0, spawnPoint.Length - 1);
+        int idx = Random.Range(0, spawnPoint.Length);
         return spawnPoint[idx].transform.position;
     }
 }
