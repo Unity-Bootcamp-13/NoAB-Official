@@ -16,18 +16,15 @@ public class ProjectilePoolManager : MonoBehaviour
 {
     [SerializeField] private List<PoolConfig> poolConfigs;
 
-    private Dictionary<GameObject, IObjectPool<Projectile>> _poolsByPrefab;
     private Dictionary<int, IObjectPool<Projectile>> _poolsById;
 
     private void Awake()
     {
-        _poolsByPrefab = new Dictionary<GameObject, IObjectPool<Projectile>>(poolConfigs.Count);
         _poolsById = new Dictionary<int, IObjectPool<Projectile>>(poolConfigs.Count);
 
         foreach (PoolConfig poolConfig in poolConfigs)
         {
             IObjectPool<Projectile> pool = CreatePool(poolConfig.prefab);
-            _poolsByPrefab[poolConfig.prefab] = pool;
             _poolsById[poolConfig.id] = pool;
         }
     }

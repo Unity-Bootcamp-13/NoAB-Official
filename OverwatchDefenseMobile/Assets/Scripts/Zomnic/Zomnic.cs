@@ -64,15 +64,7 @@ public class Zomnic : MonoBehaviour
         
         _currentHp -= damage;
         Debug.Log($"{_currentHp}");
-
-        if (IsDead)
-        {
-            Debug.Log("Á×À½");
-            animator.SetTrigger("dead");
-            return;
-        }
-        
-        
+                
         animator.SetBool("isMoving", false);
         animator.SetBool("isSelfDestructing", false);
         animator.SetTrigger("hit");

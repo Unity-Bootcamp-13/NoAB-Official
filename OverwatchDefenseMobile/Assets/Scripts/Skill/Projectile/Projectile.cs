@@ -1,14 +1,6 @@
+using System.Collections;
 using UnityEngine;
 
-public struct ProjectileSettings
-{
-    public int id;
-    public int damage;
-    public float speed;
-    public float lifetime;
-    public bool useGravity;
-    public CollisionDetectionMode collisionDetectionMode;
-}
 
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class Projectile : MonoBehaviour
@@ -19,6 +11,8 @@ public class Projectile : MonoBehaviour
     private float _lifetime;
     private int _damage;
     private float _spawnTime;
+    private bool _isReleased = false;
+    private bool _useRay;
 
     public int Id { get { return _id; } }
 
@@ -27,12 +21,13 @@ public class Projectile : MonoBehaviour
     public void Initialize(Vector3 position, Vector3 direction, ProjectileSettings projectileSettings)
     {
         transform.position = position;
-        transform.rotation = Quaternion.LookRotation(direction);
 
         _id = projectileSettings.id;
         _lifetime = projectileSettings.lifetime;
         _damage = projectileSettings.damage;
+        _useRay = projectileSettings.useRay;
         _spawnTime = Time.time;
+        _isReleased = false;
 
         _rigidbody.useGravity = projectileSettings.useGravity;
         _rigidbody.collisionDetectionMode = projectileSettings.collisionDetectionMode;
@@ -48,8 +43,23 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
+        if (_isReleased) return;
+
         if (Time.time - _spawnTime > _lifetime)
         {
+            _projectilePoolManager.ReturnProjectile(this);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (_useRay) return;
+
+        if (other.CompareTag("Zomnic"))
+        {
+            Zomnic zomnic = other.GetComponent<Zomnic>();
+            zomnic.TakeDamage(_damage);
+            zomnic.isSlowed = true;
             _projectilePoolManager.ReturnProjectile(this);
         }
     }
