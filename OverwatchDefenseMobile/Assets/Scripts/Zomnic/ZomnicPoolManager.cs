@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -7,6 +8,7 @@ public class ZomnicPoolManager : MonoBehaviour
 
     private IObjectPool<GameObject> zomnicPool;
 
+    public readonly List<GameObject> zomnicList = new List<GameObject>();
 
     void Awake()
     {
@@ -14,6 +16,7 @@ public class ZomnicPoolManager : MonoBehaviour
             createFunc: () => 
             {
                 GameObject go = Instantiate(zomnicPrefab, transform);
+                zomnicList.Add(go);
                 go.SetActive(false);
                 Zomnic zomnic = go.GetComponent<Zomnic>();
                 zomnic.InjectPoolManager(this);
