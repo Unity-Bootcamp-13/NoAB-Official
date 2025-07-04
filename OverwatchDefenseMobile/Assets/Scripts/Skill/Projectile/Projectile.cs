@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -7,12 +7,12 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField] Rigidbody _rigidbody;
     [SerializeField] Collider _collider;
+    [SerializeField] ProjectileTarget target;
     private int _id;
     private float _lifetime;
     private int _damage;
     private float _spawnTime;
     private bool _isReleased = false;
-    private bool _useRay;
 
     public int Id { get { return _id; } }
 
@@ -25,7 +25,6 @@ public class Projectile : MonoBehaviour
         _id = projectileSettings.id;
         _lifetime = projectileSettings.lifetime;
         _damage = projectileSettings.damage;
-        _useRay = projectileSettings.useRay;
         _spawnTime = Time.time;
         _isReleased = false;
 
@@ -33,7 +32,7 @@ public class Projectile : MonoBehaviour
         _rigidbody.collisionDetectionMode = projectileSettings.collisionDetectionMode;
         _rigidbody.linearVelocity = direction * projectileSettings.speed;
 
-        _collider.isTrigger = true;
+        _collider.isTrigger = false;
     }
 
     public void InjectPoolManager(ProjectilePoolManager projectilePoolManager)
@@ -47,20 +46,35 @@ public class Projectile : MonoBehaviour
 
         if (Time.time - _spawnTime > _lifetime)
         {
-            _projectilePoolManager.ReturnProjectile(this);
+            Release();
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (_useRay) return;
+        if (_isReleased) return;
 
-        if (other.CompareTag("Zomnic"))
+        if (collision.gameObject.CompareTag("Player"))
+            return;
+
+        if (_id == 10002)
         {
-            Zomnic zomnic = other.GetComponent<Zomnic>();
-            zomnic.TakeDamage(_damage);
-            zomnic.isSlowed = true;
-            _projectilePoolManager.ReturnProjectile(this);
+            List<Collider> targetlist = new List<Collider>(target.targetList);
+
+            foreach (Collider target in targetlist)
+            {
+                Zomnic zomnic = target.GetComponent<Zomnic>();
+                zomnic.TakeDamage(_damage);
+                zomnic.isSlowed = true;
+            }
         }
+
+        Release();
+    }
+
+    private void Release()
+    {
+        _isReleased = true;
+        _projectilePoolManager.ReturnProjectile(this);
     }
 }

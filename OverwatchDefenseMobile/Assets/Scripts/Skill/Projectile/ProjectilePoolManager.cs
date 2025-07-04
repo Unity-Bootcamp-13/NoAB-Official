@@ -35,7 +35,7 @@ public class ProjectilePoolManager : MonoBehaviour
             createFunc: () =>
             {
                 GameObject go = Instantiate(prefab, transform);
-                Projectile prj = go.GetComponent<Projectile>();
+                Projectile prj = go.GetComponentInChildren<Projectile>();
                 prj.InjectPoolManager(this);
                 return prj;
             },
