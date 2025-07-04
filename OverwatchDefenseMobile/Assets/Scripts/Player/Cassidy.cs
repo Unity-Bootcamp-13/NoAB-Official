@@ -178,16 +178,11 @@ public class Cassidy : Character
 
     public IEnumerator C_Rolling(Vector3 inputVector)
     {
-        if (!rolling.isSkillPossible)
-            yield break;
-
-        rolling.isSkillPossible = false;
-
         Vector3 forward = Camera.main.transform.forward;
         forward.y = 0f;
         forward.Normalize();
 
-        // playerRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+        playerRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
         playerRb.useGravity = false;
 
         float rollDuration = 0.25f;
@@ -211,16 +206,16 @@ public class Cassidy : Character
         }
 
         Vector3 midPos = (startPos + endPos) / 2f;
-        
+
 
 
         while (elapsed < rollDuration)
         {
             float t = elapsed / rollDuration;
 
-            Vector3 targetPos = Vector3.Lerp(startPos, midPos, t); 
+            Vector3 targetPos = Vector3.Lerp(startPos, midPos, t);
             Quaternion targetRot = Quaternion.Lerp(startRotation, endRotation, t);
-
+            
             playerRb.MovePosition(targetPos);
             playerRb.MoveRotation(targetRot);
 
@@ -245,8 +240,5 @@ public class Cassidy : Character
         }
 
         playerRb.useGravity = true;
-        
-        yield return new WaitForSeconds(rolling.skillCoolTime);
-        rolling.isSkillPossible = true;
     }
 }
