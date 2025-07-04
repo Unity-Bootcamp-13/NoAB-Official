@@ -5,29 +5,37 @@ public class Ult : MonoBehaviour
 {
     [SerializeField] private ZomnicPoolManager zomnicPoolManager;
 
-    private Dictionary<float, GameObject> _enemyDictionary = new Dictionary<float, GameObject>();
-    private List<Zomnic> _targetList = new List<Zomnic>();
+    private Dictionary<float, GameObject> _enemyDictionary = new Dictionary<float, GameObject>();    
     private Dictionary<Zomnic, float> _damageDictionary = new Dictionary<Zomnic, float>();
+    private List<Zomnic> _targetList = new List<Zomnic>();
     private List<float> _distanceList = new List<float>();
     private Queue<GameObject> _shotOrder = new Queue<GameObject>();
-    
 
-    public void FirstInput()
-    {
+    private float _initUltPoint;
+    internal float _currentUltPoint = 0;
+    private Dictionary<GameObject, int> _zomnicPreviousHpDictionary = new Dictionary<GameObject, int>();
+
+
+
+    public void FirstInput(float initUiGauge)
+    {      
+
         Debug.Log("처음 누름");
+        _initUltPoint = initUiGauge;
+
         _enemyDictionary.Clear();
         _distanceList.Clear();
         _targetList.Clear();
         _damageDictionary.Clear();
 
-        foreach (GameObject enemy in zomnicPoolManager.zomnicList)
+        foreach (GameObject zomnic in zomnicPoolManager.zomnicList)
         {
-            if (!enemy.activeSelf) continue;
-            if (!IsObjectVisibleToCamera(enemy)) continue;
+            if (!zomnic.activeSelf) continue;
+            if (!IsObjectVisibleToCamera(zomnic)) continue;
 
-            float distance = Vector3.Distance(Camera.main.transform.position, enemy.transform.position);
+            float distance = Vector3.Distance(Camera.main.transform.position, zomnic.transform.position);
 
-            _enemyDictionary.Add(distance, enemy);
+            _enemyDictionary.Add(distance, zomnic);
             _distanceList.Add(distance);
         }
 
@@ -42,20 +50,24 @@ public class Ult : MonoBehaviour
 
     public void TrackInput()
     {
-        Debug.Log("계속 누르고 있음");
-        foreach (GameObject enemy in zomnicPoolManager.zomnicList)
-        {
-            if (!enemy.activeSelf) continue;
-            if (_targetList.Contains(enemy.gameObject.GetComponent<Zomnic>())) continue;
-            if (!IsObjectVisibleToCamera(enemy)) continue;
+        // if (!_canUseUltimate) return;
 
-            _shotOrder.Enqueue(enemy);
-            _targetList.Add(enemy.gameObject.GetComponent<Zomnic>());
+        Debug.Log("계속 누르고 있음");
+        foreach (GameObject zomnic in zomnicPoolManager.zomnicList)
+        {
+            if (!zomnic.activeSelf) continue;
+            if (_targetList.Contains(zomnic.gameObject.GetComponent<Zomnic>())) continue;
+            if (!IsObjectVisibleToCamera(zomnic)) continue;
+
+            _shotOrder.Enqueue(zomnic);
+            _targetList.Add(zomnic.gameObject.GetComponent<Zomnic>());
         }
     }
 
     public void IncreaseDamage()
     {
+        // if (!_canUseUltimate) return;
+
         Debug.Log("데미지 증가중");
         foreach (Zomnic zomnic in _targetList)
         {
@@ -68,6 +80,7 @@ public class Ult : MonoBehaviour
             if (_damageDictionary[zomnic] >= 200) continue;
 
             float timer = 0;
+
             timer += Time.deltaTime;
             _damageDictionary[zomnic] += timer * 150;
             if (timer > 2f)
@@ -77,6 +90,8 @@ public class Ult : MonoBehaviour
 
     public void FireUltimate()
     {
+        // if (!_canUseUltimate) return;
+
         Debug.Log("궁극기 발사");
         while (_shotOrder.Count > 0)
         {
@@ -86,6 +101,71 @@ public class Ult : MonoBehaviour
 
             zomnic.TakeDamage((int)_damageDictionary[zomnic]);
         }
+
+        EndUltEffect();
+    }
+
+    public void IncreaseUltgaugeOverTime()
+    {
+        if (_currentUltPoint < _initUltPoint)
+        {
+            _currentUltPoint += Time.deltaTime * 500;
+        }
+        else
+        {
+            Debug.Log("궁극기사용가능");
+            //_canUseUltimate = true;
+        }
+
+        if (_currentUltPoint > 1800)
+        {
+            _currentUltPoint = 1800;
+        }
+    }
+
+    public void IncreaseUltgaugeByDamage()
+    {
+        foreach (GameObject zomnic in zomnicPoolManager.zomnicList)
+        {
+            if (!zomnic.activeSelf)
+            {
+                _zomnicPreviousHpDictionary.Remove(zomnic);
+                continue;
+            }
+
+            int currentHp = zomnic.GetComponent<Zomnic>().CurrentHp;
+
+            if (currentHp >= 200) continue;
+
+            if (!_zomnicPreviousHpDictionary.ContainsKey(zomnic))
+                _zomnicPreviousHpDictionary[zomnic] = 200;
+
+            int previousHp = _zomnicPreviousHpDictionary[zomnic];
+            if (previousHp > currentHp)
+            {
+                int damageAmount = previousHp - currentHp;
+                _currentUltPoint += damageAmount;
+                Debug.Log($"궁극기 게이지 증가: {damageAmount}");
+                _zomnicPreviousHpDictionary[zomnic] = currentHp;
+            }
+
+            if (_currentUltPoint > 1800)
+            {
+                _currentUltPoint = 1800;
+            }
+        }
+    }
+
+    private void StartUltEffect()
+    {
+        // 이속감소
+    }
+
+    private void EndUltEffect()
+    {
+        _currentUltPoint = 0;
+        // 재장전 - 시작 혹은 끝에 
+        // 이속회복
     }
 
     public bool IsObjectVisibleToCamera(GameObject gameObject)
@@ -101,7 +181,9 @@ public class Ult : MonoBehaviour
         Vector3 directionToTarget = (gameObject.transform.position - Camera.main.transform.position).normalized;
         float distanceToTarget = Vector3.Distance(Camera.main.transform.position, gameObject.transform.position);
 
-        bool isVisible = !Physics.Raycast(Camera.main.transform.position, directionToTarget, distanceToTarget - 0.1f);
+        int layerMask = ~LayerMask.GetMask("Zomnic", "Transparency");
+
+        bool isVisible = !Physics.Raycast(Camera.main.transform.position, directionToTarget, distanceToTarget - 0.1f, layerMask);
 
         return isVisible;
     }
