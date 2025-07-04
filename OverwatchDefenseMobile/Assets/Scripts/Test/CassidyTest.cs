@@ -3,12 +3,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class Cassidy : Character
+public class CassidyTest: Character
 {
     [SerializeField] private ProjectileManager projectileManager;
-    [SerializeField] private Rigidbody playerRb;
-    [SerializeField] private PlayerMovement PlayerMovement;
+    [SerializeField] private PlayerMovementTest playerMovement;
     [SerializeField] private Ult ult;
+    [SerializeField] private CharacterController characterController;
+
+    private bool _isRolling;
 
     private int peacekeeperCurrentBulletCount;
 
@@ -55,8 +57,15 @@ public class Cassidy : Character
     [Header("Rolling")]
     SkillSettings rolling = new SkillSettings
     {
-        skillCoolTime = 6f,
+        skillCoolTime = 1f,
         isSkillPossible = true
+    };
+
+    [Header("Highnoon")]
+    SkillSettings highnoon = new SkillSettings
+    {
+        ultimatePoint = 1800,
+        isSkillPossible = true,
     };
 
     private void Start()
@@ -66,13 +75,21 @@ public class Cassidy : Character
 
     public void OnPointerDown()
     {
+        if (highnoon.isSkillPossible ==false)
+            return;
+
         _buttonDown = true;
-       // ult.FirstInput();
+
+        ult.FirstInput(highnoon.ultimatePoint);
     }
 
     public void OnPointerUp()
     {
         _buttonDown = false;
+
+        if (highnoon.isSkillPossible == false)
+            return;
+
         ult.FireUltimate();
     }
 
@@ -87,7 +104,7 @@ public class Cassidy : Character
 
         if (Keyboard.current.shiftKey.wasPressedThisFrame)
         {
-            Skill_CombatRoll();
+           Skill_CombatRoll();
         }
 
         if (_buttonDown)
@@ -98,7 +115,7 @@ public class Cassidy : Character
 
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
-           // ult.FirstInput();
+            ult.FirstInput(highnoon.ultimatePoint);
         }
 
         if (Keyboard.current.qKey.isPressed)
@@ -118,6 +135,7 @@ public class Cassidy : Character
     {
         StartCoroutine(NormalAtk());
     }
+
 
     public IEnumerator NormalAtk()
     {
@@ -169,82 +187,66 @@ public class Cassidy : Character
         flashbang.isSkillPossible = true;
     }
 
+
     public void Skill_CombatRoll()
     {
-        Vector3 inputRollVector  = PlayerMovement.MoveDir;
-        
-        StartCoroutine(C_Rolling(inputRollVector));
+        if (!rolling.isSkillPossible || _isRolling) return;
+        StartCoroutine(C_Rolling(playerMovement.MoveDir));
     }
 
-    public IEnumerator C_Rolling(Vector3 inputVector)
+    private IEnumerator C_Rolling(Vector3 inputVector)
     {
-        Vector3 forward = Camera.main.transform.forward;
-        forward.y = 0f;
-        forward.Normalize();
+        rolling.isSkillPossible = false;
+        _isRolling = true;
 
-        // playerRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-        playerRb.useGravity = false;
+        Transform cam = Camera.main.transform;
+        cam.eulerAngles = new Vector3(0f, cam.eulerAngles.y, cam.eulerAngles.z);
 
-        float rollDuration = 0.25f;
-        float elapsed = 0;
-
-        Quaternion startRotation = transform.rotation;
-        Quaternion endRotation = Quaternion.Euler(30, transform.eulerAngles.y, transform.eulerAngles.z);
-
-        Vector3 startPos = transform.position;
-        Vector3 endPos;
-
-
-
-        if (inputVector == Vector3.zero)
-        {
-            endPos = startPos + forward * 6f;
-        }
+        Vector3 dir;
+        if (inputVector.sqrMagnitude > 0f)
+            dir = inputVector.normalized;
         else
         {
-            endPos = startPos + inputVector * 6f;
+            dir = cam.forward;
+            dir.y = 0f;
+            dir.Normalize();
         }
 
-        Vector3 midPos = (startPos + endPos) / 2f;
+        float rollDistance = 6f;
+        float rollDuration = 0.5f;
+        Vector3 rollVelocity = dir * (rollDistance / rollDuration);
+        float halfTime = rollDuration * 0.5f;
 
+        Transform model = transform.GetChild(0);
+        Quaternion startRot = model.localRotation;
+        Quaternion tiltRot = Quaternion.Euler(30f, 0f, 0f);
 
-
+        float elapsed = 0f;
         while (elapsed < rollDuration)
         {
-            float t = elapsed / rollDuration;
+            characterController.Move(rollVelocity * Time.deltaTime);
 
-            Vector3 targetPos = Vector3.Lerp(startPos, midPos, t);
-            Quaternion targetRot = Quaternion.Lerp(startRotation, endRotation, t);
+            if (elapsed < halfTime)
+                model.localRotation = Quaternion.Lerp(startRot, tiltRot, elapsed / halfTime);
+            else
+                model.localRotation = Quaternion.Lerp(tiltRot, startRot, (elapsed - halfTime) / halfTime);
 
-            playerRb.MovePosition(targetPos);
-            playerRb.MoveRotation(targetRot);
-
-            elapsed += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
+            elapsed += Time.deltaTime;
+            yield return null;
         }
 
-        elapsed = 0;
+        model.localRotation = startRot;
+        _isRolling = false;
 
-        while (elapsed < rollDuration)
-        {
-            float t = elapsed / rollDuration;
-
-            Vector3 targetPos = Vector3.Lerp(midPos, endPos, t);
-            Quaternion targetRot = Quaternion.Lerp(endRotation, startRotation, t);
-
-            playerRb.MovePosition(targetPos);
-            playerRb.MoveRotation(targetRot);
-
-            elapsed += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-
-        playerRb.useGravity = true;
+        yield return new WaitForSeconds(rolling.skillCoolTime);
+        rolling.isSkillPossible = true;
     }
 
+
+
 }
-        
-    
-    
+
+
+
 
 
