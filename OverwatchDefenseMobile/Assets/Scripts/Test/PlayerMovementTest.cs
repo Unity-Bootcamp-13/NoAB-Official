@@ -5,21 +5,15 @@ using UnityEngine;
 public class PlayerMovementTest : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 6f;
-    private CharacterController _controller;
+    [SerializeField] private CharacterController characterController;
     internal Vector3 MoveDir;
     private Vector2 _inputVector;
-    internal float gravity = 20f;
+    internal float gravity = 1f;
     private float y_velocity = 0;
-
-    private void Awake()
-    {
-        _controller = GetComponent<CharacterController>();
-    }
-
+       
     private void Update()
     {
         y_velocity += gravity * Time.deltaTime;
-
 
         // 입력에 따라 방향 계산
         Vector3 forward = Camera.main.transform.forward;
@@ -30,12 +24,9 @@ public class PlayerMovementTest : MonoBehaviour
         right.Normalize();
 
         MoveDir = (right * _inputVector.x + forward * _inputVector.y).normalized;
-
-        // CharacterController.Move 로 이동
-        // 속도 * deltaTime를 곱해 프레임 독립적 처리
-        Vector3 motion = MoveDir * moveSpeed * Time.deltaTime;
-        _controller.Move(motion);
-        _controller.Move(Vector3.down * y_velocity * Time.deltaTime);
+                
+        Vector3 motion = (MoveDir * moveSpeed + Vector3.down * y_velocity) * Time.deltaTime;
+        characterController.Move(motion);
     }
 
     public void OnMove(InputValue input)
