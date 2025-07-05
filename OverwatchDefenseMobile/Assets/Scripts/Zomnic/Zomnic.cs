@@ -60,6 +60,9 @@ public class Zomnic : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (IsDead)
+            return;
+
         Debug.Log("takedamageµé¾î¿È");
         
         _currentHp -= damage;

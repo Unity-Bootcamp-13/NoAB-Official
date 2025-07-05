@@ -4,6 +4,13 @@ public struct SkillSettings
     public float skillCoolTime;
     public float skillDuration;
     public float bulletReloadTime;
-    public float ultimatePoint;
     public bool isSkillPossible;
+}
+
+public struct UltimateSettings
+{
+    public float maxUltimatePoint;
+    public float damagePerSecond;
+    public float ultimatePointPerSecond;
+    public bool isUltimatePossible;
 }

@@ -4,16 +4,13 @@ using UnityEngine.InputSystem;
 
 
 public class CassidyTest: Character
-{
-    [SerializeField] private ProjectileManager projectileManager;
+{    
     [SerializeField] private PlayerMovementTest playerMovement;
-    [SerializeField] private Ult ult;
     [SerializeField] private CharacterController characterController;
-
-    private bool _isRolling;
+    [SerializeField] private ProjectileManager projectileManager;
+    [SerializeField] private CassidyUlt cassidyUlt;
 
     private int peacekeeperCurrentBulletCount;
-
     private bool _buttonDown;
 
 
@@ -49,95 +46,101 @@ public class CassidyTest: Character
 
     SkillSettings flashbang = new SkillSettings
     {
-        skillCoolTime = 0,
+        skillCoolTime = 10,
         skillDuration = 1,
         isSkillPossible = true
     };
 
-    [Header("Rolling")]
-    SkillSettings rolling = new SkillSettings
+    [Header("Combat Roll")]
+    SkillSettings combatRoll = new SkillSettings
     {
-        skillCoolTime = 1f,
+        skillCoolTime = 6f,
         isSkillPossible = true
     };
 
-    [Header("Highnoon")]
-    SkillSettings highnoon = new SkillSettings
-    {
-        ultimatePoint = 1800,
-        isSkillPossible = true,
+    [Header("Deadeye")]
+    UltimateSettings deadeye = new UltimateSettings
+    { 
+        maxUltimatePoint = 1800,
+        damagePerSecond =  150,
+        ultimatePointPerSecond = 5,
+        isUltimatePossible = true,
     };
 
-    private void Start()
+
+    private void Awake()
     {
         peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
+        cassidyUlt.InjectUltimateSettings(deadeye);
+    }
+
+    private void Update()
+    {
+        // NormalAttack();
+
+        // 기본 공격
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            NormalAttack();
+        }
+
+        // 스킬 1 - 섬광탄
+        if (Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            Skill_Flashbang(); 
+        }
+
+        // 스킬 2 - 구르기
+        if (Keyboard.current.shiftKey.wasPressedThisFrame)
+        {
+           Skill_CombatRoll();
+        }
+
+        // 궁극기
+        if (_buttonDown)
+        {
+            cassidyUlt.TrackInput();
+            cassidyUlt.IncreaseDamage();
+        }
+
+        if (Keyboard.current.qKey.wasPressedThisFrame)
+        {
+            cassidyUlt.FirstInput();
+        }
+
+        if (Keyboard.current.qKey.isPressed)
+        {
+            cassidyUlt.TrackInput();
+            cassidyUlt.IncreaseDamage();
+        }
+
+        if (Keyboard.current.qKey.wasReleasedThisFrame)
+        {
+            cassidyUlt.FireUltimate();
+        }
     }
 
     public void OnPointerDown()
     {
-        if (highnoon.isSkillPossible ==false)
-            return;
-
         _buttonDown = true;
 
-        ult.FirstInput(highnoon.ultimatePoint);
+        cassidyUlt.FirstInput();
     }
 
     public void OnPointerUp()
     {
         _buttonDown = false;
 
-        if (highnoon.isSkillPossible == false)
-            return;
-
-        ult.FireUltimate();
+        cassidyUlt.FireUltimate();
     }
 
-    void Update()
-    {
-        // NormalAttack();
-
-        if (Keyboard.current.eKey.wasPressedThisFrame)
-        {
-            Skill_Flashbang(); 
-        }
-
-        if (Keyboard.current.shiftKey.wasPressedThisFrame)
-        {
-           Skill_CombatRoll();
-        }
-
-        if (_buttonDown)
-        {
-            ult.TrackInput();
-            ult.IncreaseDamage();
-        }
-
-        if (Keyboard.current.qKey.wasPressedThisFrame)
-        {
-            ult.FirstInput(highnoon.ultimatePoint);
-        }
-
-        if (Keyboard.current.qKey.isPressed)
-        {
-            ult.TrackInput();
-            ult.IncreaseDamage();
-        }
-
-        if (Keyboard.current.qKey.wasReleasedThisFrame)
-        {
-            ult.FireUltimate();
-        }
-    }
-        
 
     public override void NormalAttack()
     {
-        StartCoroutine(NormalAtk());
+        StartCoroutine(C_NormalAtk());
     }
 
-
-    public IEnumerator NormalAtk()
+    public IEnumerator C_NormalAtk()
     {
         if (!peacekeeper.isSkillPossible)
             yield break;
@@ -173,13 +176,16 @@ public class CassidyTest: Character
 
     public void Skill_Flashbang()
     {
-        StartCoroutine(Skill_FB());
+        StartCoroutine(C_flashbang());
     }
 
-    IEnumerator Skill_FB()
+    private IEnumerator C_flashbang()
     {
         if (!flashbang.isSkillPossible)
+        {
+            Debug.Log("섬광탄 사용불가");
             yield break;
+        }
         projectileManager.FireProjectile(Camera.main.transform.position, (Camera.main.transform.forward + Camera.main.transform.up * 0.5f).normalized, flashbangBullet);
         flashbang.isSkillPossible = false;
 
@@ -190,14 +196,18 @@ public class CassidyTest: Character
 
     public void Skill_CombatRoll()
     {
-        if (!rolling.isSkillPossible || _isRolling) return;
         StartCoroutine(C_Rolling(playerMovement.MoveDir));
     }
 
     private IEnumerator C_Rolling(Vector3 inputVector)
     {
-        rolling.isSkillPossible = false;
-        _isRolling = true;
+        if (!combatRoll.isSkillPossible)
+        {
+            Debug.Log("구르기 사용불가");
+            yield break;
+        }
+
+        combatRoll.isSkillPossible = false;
 
         Transform cam = Camera.main.transform;
         cam.eulerAngles = new Vector3(0f, cam.eulerAngles.y, cam.eulerAngles.z);
@@ -236,17 +246,8 @@ public class CassidyTest: Character
         }
 
         model.localRotation = startRot;
-        _isRolling = false;
 
-        yield return new WaitForSeconds(rolling.skillCoolTime);
-        rolling.isSkillPossible = true;
+        yield return new WaitForSeconds(combatRoll.skillCoolTime);
+        combatRoll.isSkillPossible = true;
     }
-
-
-
 }
-
-
-
-
-

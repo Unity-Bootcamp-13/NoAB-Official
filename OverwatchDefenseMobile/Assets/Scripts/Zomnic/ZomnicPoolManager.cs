@@ -8,7 +8,7 @@ public class ZomnicPoolManager : MonoBehaviour
 
     private IObjectPool<GameObject> zomnicPool;
 
-    public readonly List<GameObject> zomnicList = new List<GameObject>();
+    public readonly List<Zomnic> zomnicList = new List<Zomnic>();
 
     void Awake()
     {
@@ -16,9 +16,9 @@ public class ZomnicPoolManager : MonoBehaviour
             createFunc: () => 
             {
                 GameObject go = Instantiate(zomnicPrefab, transform);
-                zomnicList.Add(go);
                 go.SetActive(false);
                 Zomnic zomnic = go.GetComponent<Zomnic>();
+                zomnicList.Add(zomnic);
                 zomnic.InjectPoolManager(this);
                 return go;
             },
