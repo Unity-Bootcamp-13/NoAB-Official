@@ -30,7 +30,6 @@ public class ZomnicController : MonoBehaviour
     {
         if (zomnic.IsDead)
         {
-            Debug.Log("Á×À½");
             zomnic.Animator.SetTrigger("dead");
             return;
         }

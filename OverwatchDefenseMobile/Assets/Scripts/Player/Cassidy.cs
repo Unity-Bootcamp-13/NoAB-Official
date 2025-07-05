@@ -8,12 +8,8 @@ public class Cassidy : Character
     [SerializeField] private ProjectileManager projectileManager;
     [SerializeField] private Rigidbody playerRb;
     [SerializeField] private PlayerMovement PlayerMovement;
-    [SerializeField] private Ult ult;
 
     private int peacekeeperCurrentBulletCount;
-
-    private bool _buttonDown;
-
 
     [Header("Peacekeeper")]
     ProjectileSettings peacekeeperBullet = new ProjectileSettings
@@ -64,17 +60,6 @@ public class Cassidy : Character
         peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
     }
 
-    public void OnPointerDown()
-    {
-        _buttonDown = true;
-       // ult.FirstInput();
-    }
-
-    public void OnPointerUp()
-    {
-        _buttonDown = false;
-        ult.FireUltimate();
-    }
 
     void Update()
     {
@@ -88,28 +73,6 @@ public class Cassidy : Character
         if (Keyboard.current.shiftKey.wasPressedThisFrame)
         {
             Skill_CombatRoll();
-        }
-
-        if (_buttonDown)
-        {
-            ult.TrackInput();
-            ult.IncreaseDamage();
-        }
-
-        if (Keyboard.current.qKey.wasPressedThisFrame)
-        {
-           // ult.FirstInput();
-        }
-
-        if (Keyboard.current.qKey.isPressed)
-        {
-            ult.TrackInput();
-            ult.IncreaseDamage();
-        }
-
-        if (Keyboard.current.qKey.wasReleasedThisFrame)
-        {
-            ult.FireUltimate();
         }
     }
         

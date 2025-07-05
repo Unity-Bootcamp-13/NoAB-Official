@@ -822,7 +822,7 @@ MonoBehaviour:
   - id: 10001
     prefab: {fileID: 2618727709663460533, guid: d9d1199ad1df03945a478fb26c52159a, type: 3}
   - id: 10002
-    prefab: {fileID: 5808252380799869480, guid: afc55e93a23c90346bbca884fee46f9e, type: 3}
+    prefab: {fileID: 1845551210882535773, guid: 4012d0243f62656459f939cede9b384b, type: 3}
 --- !u!114 &924360652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2515,7 +2515,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4542001348868559996, guid: b19172ba9339102478de30fb4669f4ef, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -2548,10 +2549,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6b080b2d7a6eb04396b461b76e8d3d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileManager: {fileID: 924360652}
   playerMovement: {fileID: 8394391377748377614}
-  ult: {fileID: 8654638590863676522}
   characterController: {fileID: 7060082873499876528}
+  projectileManager: {fileID: 924360652}
+  cassidyUlt: {fileID: 8394391377748377615}
 --- !u!1 &2187052930571875599
 GameObject:
   m_ObjectHideFlags: 0
@@ -2671,9 +2672,9 @@ GameObject:
   - component: {fileID: 526190667696816546}
   - component: {fileID: 7060082873499876528}
   - component: {fileID: 301114013393850043}
-  - component: {fileID: 8654638590863676522}
   - component: {fileID: 2183485324719485349}
   - component: {fileID: 8394391377748377614}
+  - component: {fileID: 8394391377748377615}
   m_Layer: 0
   m_Name: TestCassidy
   m_TagString: Player
@@ -3206,7 +3207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
---- !u!114 &8654638590863676522
+--- !u!114 &8394391377748377615
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3215,7 +3216,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2435305193743203673}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a6327728971fb34f97001cdc5d1a6b2, type: 3}
+  m_Script: {fileID: 11500000, guid: 6255fcf1ad3b3684fa6ed7ba95fb288c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   zomnicPoolManager: {fileID: 105972201}
