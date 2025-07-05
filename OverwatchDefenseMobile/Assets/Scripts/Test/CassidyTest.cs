@@ -212,24 +212,24 @@ public class CassidyTest: Character
         Transform cam = Camera.main.transform;
         cam.eulerAngles = new Vector3(0f, cam.eulerAngles.y, cam.eulerAngles.z);
 
-        Vector3 dir;
+        Vector3 rolling_dir;
+
         if (inputVector.sqrMagnitude > 0f)
-            dir = inputVector.normalized;
+            rolling_dir = inputVector.normalized;
         else
         {
-            dir = cam.forward;
-            dir.y = 0f;
-            dir.Normalize();
+            rolling_dir = cam.forward;
+            rolling_dir.y = 0f;
+            rolling_dir.Normalize();
         }
 
         float rollDistance = 6f;
         float rollDuration = 0.5f;
-        Vector3 rollVelocity = dir * (rollDistance / rollDuration);
+        Vector3 rollVelocity = rolling_dir * (rollDistance / rollDuration);
         float halfTime = rollDuration * 0.5f;
 
-        Transform model = transform.GetChild(0);
-        Quaternion startRot = model.localRotation;
-        Quaternion tiltRot = Quaternion.Euler(30f, 0f, 0f);
+        Quaternion startRot = cam.localRotation;
+        Quaternion maxRot = Quaternion.Euler(30f, 0f, 0f);
 
         float elapsed = 0f;
         while (elapsed < rollDuration)
@@ -237,15 +237,15 @@ public class CassidyTest: Character
             characterController.Move(rollVelocity * Time.deltaTime);
 
             if (elapsed < halfTime)
-                model.localRotation = Quaternion.Lerp(startRot, tiltRot, elapsed / halfTime);
+                cam.localRotation = Quaternion.Lerp(startRot, maxRot, elapsed / halfTime);
             else
-                model.localRotation = Quaternion.Lerp(tiltRot, startRot, (elapsed - halfTime) / halfTime);
+                cam.localRotation = Quaternion.Lerp(maxRot, startRot, (elapsed - halfTime) / halfTime);
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        model.localRotation = startRot;
+        cam.localRotation = startRot;
 
         yield return new WaitForSeconds(combatRoll.skillCoolTime);
         combatRoll.isSkillPossible = true;
