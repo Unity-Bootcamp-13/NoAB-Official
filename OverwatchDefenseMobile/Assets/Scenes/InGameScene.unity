@@ -1738,8 +1738,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1130661843960306876}
-          m_TargetAssemblyTypeName: Cassidy, Assembly-CSharp
+        - m_Target: {fileID: 2183485324719485349}
+          m_TargetAssemblyTypeName: CassidyTest, Assembly-CSharp
           m_MethodName: OnPointerDown
           m_Mode: 1
           m_Arguments:
@@ -1754,8 +1754,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1130661843960306876}
-          m_TargetAssemblyTypeName: Cassidy, Assembly-CSharp
+        - m_Target: {fileID: 2183485324719485349}
+          m_TargetAssemblyTypeName: CassidyTest, Assembly-CSharp
           m_MethodName: OnPointerUp
           m_Mode: 1
           m_Arguments:
@@ -2328,17 +2328,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1130661843960306876 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2401778012030908714, guid: b19172ba9339102478de30fb4669f4ef, type: 3}
-  m_PrefabInstance: {fileID: 2034322921331967181}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1af93d17f5e2714b9a86d0f7cdf7f17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!20 &1228510062886086329
 Camera:
   m_ObjectHideFlags: 0
@@ -3207,6 +3196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  characterController: {fileID: 7060082873499876528}
 --- !u!114 &8394391377748377615
 MonoBehaviour:
   m_ObjectHideFlags: 0
