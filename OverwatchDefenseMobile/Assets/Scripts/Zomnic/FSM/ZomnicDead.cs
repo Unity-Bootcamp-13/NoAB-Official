@@ -21,7 +21,7 @@ public class ZomnicDead : StateMachineBehaviour
         GameObject zomnic = animator.gameObject;
 
         if (zomnic.GetComponent<ZomnicController>().isSelfDestructDead)
-            BaseHealth.TakeDamage(100);
+            BaseHp.TakeDamage(100);
         zomnicPoolManager.ReturnZomnic(zomnic);        
     }
 

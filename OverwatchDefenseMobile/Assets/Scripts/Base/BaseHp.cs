@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.UI;
 
-public class BaseHealth 
+public class BaseHp 
 {     
-    public static int currentHp = 3000;        
-  
-    public bool GameOver => currentHp <= 0;          
+    [SerializeField] private Slider _slider;
+    public static int currentHp = 3000;          
+    public bool GameOver => currentHp <= 0;              
 
     public static void TakeDamage(int damage)
     {      
