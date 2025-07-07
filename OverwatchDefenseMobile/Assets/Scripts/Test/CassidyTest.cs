@@ -11,7 +11,6 @@ public class CassidyTest: Character
     [SerializeField] private CassidyUlt cassidyUlt;
 
     private int peacekeeperCurrentBulletCount;
-    private bool _buttonDown;
 
 
     [Header("Peacekeeper")]
@@ -62,8 +61,9 @@ public class CassidyTest: Character
     UltimateSettings deadeye = new UltimateSettings
     { 
         maxUltimatePoint = 1800,
-        damagePerSecond =  150,
-        ultimatePointPerSecond = 5,
+        pointPerDamage =  1,
+        pointPerSecond = 5,
+        damagePerSecond = 150,
         isUltimatePossible = true,
     };
 
@@ -97,41 +97,25 @@ public class CassidyTest: Character
         }
 
         // 궁극기
-        if (_buttonDown)
-        {
-            cassidyUlt.TrackInput();
-            cassidyUlt.IncreaseDamage();
-        }
-
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
-            cassidyUlt.FirstInput();
-        }
-
-        if (Keyboard.current.qKey.isPressed)
-        {
-            cassidyUlt.TrackInput();
-            cassidyUlt.IncreaseDamage();
+            cassidyUlt.OnUltimateButtonDown();
         }
 
         if (Keyboard.current.qKey.wasReleasedThisFrame)
         {
-            cassidyUlt.FireUltimate();
+            cassidyUlt.OnUltimateButtonUp();
         }
     }
 
     public void OnPointerDown()
     {
-        _buttonDown = true;
-
-        cassidyUlt.FirstInput();
+        cassidyUlt.OnUltimateButtonDown();
     }
 
     public void OnPointerUp()
     {
-        _buttonDown = false;
-
-        cassidyUlt.FireUltimate();
+        cassidyUlt.OnUltimateButtonUp();
     }
 
 

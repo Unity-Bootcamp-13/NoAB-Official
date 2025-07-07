@@ -12,18 +12,41 @@ public class CassidyUlt : MonoBehaviour
 
     internal float currentUltPoint;
     private UltimateSettings _deadeye;
+    private bool _isAiming = false;
 
     private void Awake()
     {
         currentUltPoint = 0;
     }
 
+    private void OnEnable()
+    {
+        Zomnic.OnZomnicDamaged += IncreaseUltPointByDamage;
+    }
+
+    private void OnDisable()
+    {
+        Zomnic.OnZomnicDamaged -= IncreaseUltPointByDamage;
+    }
+
     private void Update()
     {
         IncreaseUltPointPerSecond();
+
+        if (!_isAiming)
+            return;
+
+        TrackInput();
+        IncreaseDamage();
+
+        float aimingTimer = 0f;
+        aimingTimer += Time.deltaTime;
+
+        if (aimingTimer >= 7f)
+            OnUltimateButtonUp();
     }
 
-    public void FirstInput()
+    public void OnUltimateButtonDown()
     {
         if (!_deadeye.isUltimatePossible)
         {
@@ -31,7 +54,7 @@ public class CassidyUlt : MonoBehaviour
             return;
         }
 
-        _deadeye.isUltimatePossible = false;
+        _isAiming = true;
 
         _sortedTargets.Clear();
         _damageTimers.Clear();
@@ -57,6 +80,19 @@ public class CassidyUlt : MonoBehaviour
             _targetSet.Add(entry.zomnic);
             _damageTimers[entry.zomnic] = 0f;
         }
+
+        StartUltEffect();
+    }
+
+    public void OnUltimateButtonUp()
+    {
+        if (!_isAiming) return;
+
+        FireUltimate();
+        EndUltEffect();
+
+        _isAiming = false;
+        _deadeye.isUltimatePossible = false;
     }
 
     public void TrackInput()
@@ -82,8 +118,9 @@ public class CassidyUlt : MonoBehaviour
         foreach (Zomnic zomnic in _targetSet)
         {
             if (!IsObjectVisibleToCamera(zomnic.gameObject)) continue;
+
             float timer = _damageTimers[zomnic] + Time.deltaTime;
-            _damageTimers[zomnic] = Mathf.Min(timer, zomnic.MaxHP / _deadeye.damagePerSecond);
+            _damageTimers[zomnic] = timer;
         }
     }
 
@@ -96,19 +133,16 @@ public class CassidyUlt : MonoBehaviour
             Zomnic zomnic = _shotOrder.Dequeue();
             if (!IsObjectVisibleToCamera(zomnic.gameObject)) continue;
 
-            _damageTimers.TryGetValue(zomnic, out float timer);
-            int damage = Mathf.Min((int)(timer * _deadeye.damagePerSecond), zomnic.MaxHP);
+            int damage = (int)(_damageTimers[zomnic] * _deadeye.damagePerSecond);
             zomnic.TakeDamage(damage);
         }
-
-        EndUltEffect();
     }
 
     public void IncreaseUltPointPerSecond()
     {
         if (currentUltPoint < _deadeye.maxUltimatePoint)
         {
-            currentUltPoint += Time.deltaTime * _deadeye.ultimatePointPerSecond;
+            currentUltPoint += Time.deltaTime * _deadeye.pointPerSecond;
             currentUltPoint = Mathf.Min(currentUltPoint, _deadeye.maxUltimatePoint);
         }
         else
@@ -118,11 +152,13 @@ public class CassidyUlt : MonoBehaviour
         }
     }
 
-    public void IncreaseUltgaugeByDamage()
+    public void IncreaseUltPointByDamage(float damage)
     {
-        // 좀닉에서 받은 데미지를 게임매니저에 보고
-        // --> 게임매니저에서 영웅에게 포인트 보고
-        // 아님 이벤트로 구현..
+        float point = damage * _deadeye.pointPerDamage;
+        currentUltPoint = Mathf.Min(currentUltPoint + point, _deadeye.maxUltimatePoint);
+
+        if (currentUltPoint >= _deadeye.maxUltimatePoint)
+            _deadeye.isUltimatePossible = true;
     }
 
     private void StartUltEffect()

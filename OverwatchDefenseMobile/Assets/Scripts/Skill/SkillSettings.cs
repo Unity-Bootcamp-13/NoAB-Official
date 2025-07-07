@@ -10,7 +10,8 @@ public struct SkillSettings
 public struct UltimateSettings
 {
     public float maxUltimatePoint;
+    public float pointPerDamage;
+    public float pointPerSecond;
     public float damagePerSecond;
-    public float ultimatePointPerSecond;
     public bool isUltimatePossible;
 }

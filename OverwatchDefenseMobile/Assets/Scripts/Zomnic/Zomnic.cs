@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -18,13 +18,11 @@ public class Zomnic : MonoBehaviour
 
     public Vector3 BasePoint { get { return basePoint; } }
     public int MaxHP { get { return maxHp; } }
-    public int CurrentHp { get { return _currentHp; } }
     public Animator Animator { get { return animator; } }
-    public NavMeshAgent Agent { get { return agent; } }
     public bool IsDead => _currentHp <= 0;
     public ZomnicPoolManager ZomnicPoolManager { get { return _zomnicPoolManager; } }
-
-    public bool isSlowed = false;
+    public static event Action<float> OnZomnicDamaged;
+    internal bool isSlowed = false;
 
 
     private void OnEnable()
@@ -63,9 +61,13 @@ public class Zomnic : MonoBehaviour
         if (IsDead)
             return;
 
+        if (_currentHp < damage)
+            damage = _currentHp;
+
         Debug.Log("takedamageµé¾î¿È");
         
         _currentHp -= damage;
+        OnZomnicDamaged?.Invoke(damage);
         Debug.Log($"{_currentHp}");
                 
         animator.SetBool("isMoving", false);
