@@ -3,11 +3,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class Cassidy : Character
-{
+public class Cassidy: Character
+{    
+    [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField] private CharacterController characterController;
     [SerializeField] private ProjectileManager projectileManager;
-    [SerializeField] private Rigidbody playerRb;
-    [SerializeField] private PlayerMovement PlayerMovement;
+    [SerializeField] private CassidyUlt cassidyUlt;
+    [SerializeField] AudioSource rollingSound;
+    [SerializeField] AudioSource reloadSound;
 
     private int peacekeeperCurrentBulletCount;
 
@@ -43,88 +46,146 @@ public class Cassidy : Character
 
     SkillSettings flashbang = new SkillSettings
     {
-        skillCoolTime = 0,
+        skillCoolTime = 10,
         skillDuration = 1,
         isSkillPossible = true
     };
 
-    [Header("Rolling")]
-    SkillSettings rolling = new SkillSettings
+    [Header("Combat Roll")]
+    SkillSettings combatRoll = new SkillSettings
     {
         skillCoolTime = 6f,
         isSkillPossible = true
     };
 
-    private void Start()
+    [Header("Deadeye")]
+    UltimateSettings deadeye = new UltimateSettings
+    { 
+        maxUltimatePoint = 1800,
+        pointPerDamage =  1,
+        pointPerSecond = 5,
+        damagePerSecond = 150,
+        isUltimatePossible = true,
+    };
+
+
+    private void Awake()
     {
         peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
+        cassidyUlt.InjectUltimateSettings(deadeye);
     }
 
+    private void Update()
+    {       
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            NormalAttack();
+        }
 
-    void Update()
-    {
-        // NormalAttack();
 
+        // 스킬 1 - 섬광탄
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
             Skill_Flashbang(); 
         }
 
+        // 스킬 2 - 구르기
         if (Keyboard.current.shiftKey.wasPressedThisFrame)
         {
-            Skill_CombatRoll();
+           Skill_CombatRoll();
         }
+
+        // 궁극기
+        if (Keyboard.current.qKey.wasPressedThisFrame)
+        {
+            cassidyUlt.OnUltimateButtonDown();
+        }
+
+        if (Keyboard.current.qKey.wasReleasedThisFrame)
+        {
+            cassidyUlt.OnUltimateButtonUp();
+        }
+
+        // if (peacekeeper.isSkillPossible)
+        //     NormalAttack();
     }
-        
+
+    public void OnPointerDown()
+    {
+        cassidyUlt.OnUltimateButtonDown();
+    }
+
+    public void OnPointerUp()
+    {
+        cassidyUlt.OnUltimateButtonUp();
+    }
+
 
     public override void NormalAttack()
     {
-        StartCoroutine(NormalAtk());
-    }
-
-    public IEnumerator NormalAtk()
-    {
         if (!peacekeeper.isSkillPossible)
-            yield break;
+            return;
 
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         RaycastHit hit;
-        
+
         if (Physics.Raycast(ray, out hit, 100.0f))
         {
             if (hit.collider.CompareTag("Zomnic"))
             {
-                projectileManager.FireProjectile(Camera.main.transform.position, Camera.main.transform.forward, peacekeeperBullet);
-                peacekeeper.isSkillPossible = false;
-                peacekeeperCurrentBulletCount--;
-
-                Debug.Log("총알 발사");
-                Zomnic zomnic = hit.collider.GetComponent<Zomnic>();
-                zomnic.TakeDamage(peacekeeperBullet.damage);
+                StartCoroutine(C_NormalAtk(hit));
             }
         }
-        yield return new WaitForSeconds(peacekeeper.skillCoolTime);
+    }
+
+    public IEnumerator C_NormalAtk(RaycastHit hit)
+    {
+        if (!peacekeeper.isSkillPossible)
+            yield break;
 
         if (peacekeeperCurrentBulletCount <= 0)
         {
-            Debug.Log("재장전");
-            yield return new WaitForSeconds(peacekeeper.bulletReloadTime);
-            peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
-            Debug.Log("재장전 완료");
+            StartCoroutine(C_PeacekeeperReload());
+            yield break;
         }
 
+        projectileManager.FireProjectile(Camera.main.transform.position + Camera.main.transform.forward, Camera.main.transform.forward, peacekeeperBullet);
+        peacekeeper.isSkillPossible = false;
+        peacekeeperCurrentBulletCount--;
+
+        Debug.Log("총알 발사");
+        Zomnic zomnic = hit.collider.GetComponent<Zomnic>();
+        zomnic.TakeDamage(peacekeeperBullet.damage);
+
+        yield return new WaitForSeconds(peacekeeper.skillCoolTime);
+                
         peacekeeper.isSkillPossible = true;
     }
 
+    public IEnumerator C_PeacekeeperReload()
+    {
+        reloadSound.Play();
+        peacekeeper.isSkillPossible = false;
+        Debug.Log("재장전");
+        yield return new WaitForSeconds(peacekeeper.bulletReloadTime);
+        peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
+        Debug.Log("재장전 완료");
+        peacekeeper.isSkillPossible = true;
+    }
+      
+   
     public void Skill_Flashbang()
     {
-        StartCoroutine(Skill_FB());
+        StartCoroutine(C_flashbang());
     }
 
-    IEnumerator Skill_FB()
+    private IEnumerator C_flashbang()
     {
         if (!flashbang.isSkillPossible)
+        {
+            Debug.Log("섬광탄 사용불가");
             yield break;
+        }
         projectileManager.FireProjectile(Camera.main.transform.position, (Camera.main.transform.forward + Camera.main.transform.up * 0.5f).normalized, flashbangBullet);
         flashbang.isSkillPossible = false;
 
@@ -134,80 +195,60 @@ public class Cassidy : Character
 
     public void Skill_CombatRoll()
     {
-        Vector3 inputRollVector  = PlayerMovement.MoveDir;
-        
-        StartCoroutine(C_Rolling(inputRollVector));
+        StartCoroutine(C_Rolling(playerMovement.MoveDir));
     }
 
-    public IEnumerator C_Rolling(Vector3 inputVector)
+    private IEnumerator C_Rolling(Vector3 inputVector)
     {
-        Vector3 forward = Camera.main.transform.forward;
-        forward.y = 0f;
-        forward.Normalize();
-
-        // playerRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-        playerRb.useGravity = false;
-
-        float rollDuration = 0.25f;
-        float elapsed = 0;
-
-        Quaternion startRotation = transform.rotation;
-        Quaternion endRotation = Quaternion.Euler(30, transform.eulerAngles.y, transform.eulerAngles.z);
-
-        Vector3 startPos = transform.position;
-        Vector3 endPos;
-
-
-
-        if (inputVector == Vector3.zero)
+        if (!combatRoll.isSkillPossible)
         {
-            endPos = startPos + forward * 6f;
+            Debug.Log("구르기 사용불가");
+            yield break;
         }
+
+        combatRoll.isSkillPossible = false;
+
+        Transform cam = Camera.main.transform;
+        cam.eulerAngles = new Vector3(0f, cam.eulerAngles.y, cam.eulerAngles.z);
+
+        Vector3 rolling_dir;
+
+        rollingSound.Play();
+
+        if (inputVector.sqrMagnitude > 0f)
+            rolling_dir = inputVector.normalized;
         else
         {
-            endPos = startPos + inputVector * 6f;
+            rolling_dir = cam.forward;
+            rolling_dir.y = 0f;
+            rolling_dir.Normalize();
         }
 
-        Vector3 midPos = (startPos + endPos) / 2f;
+        float rollDistance = 6f;
+        float rollDuration = 0.5f;
+        Vector3 rollVelocity = rolling_dir * (rollDistance / rollDuration);
+        float halfTime = rollDuration * 0.5f;
 
+        Quaternion startRot = cam.localRotation;
+        Quaternion maxRot = Quaternion.Euler(30f, 0f, 0f);
 
-
+        float elapsed = 0f;
         while (elapsed < rollDuration)
         {
-            float t = elapsed / rollDuration;
+            characterController.Move(rollVelocity * Time.deltaTime);
 
-            Vector3 targetPos = Vector3.Lerp(startPos, midPos, t);
-            Quaternion targetRot = Quaternion.Lerp(startRotation, endRotation, t);
+            if (elapsed < halfTime)
+                cam.localRotation = Quaternion.Lerp(startRot, maxRot, elapsed / halfTime);
+            else
+                cam.localRotation = Quaternion.Lerp(maxRot, startRot, (elapsed - halfTime) / halfTime);
 
-            playerRb.MovePosition(targetPos);
-            playerRb.MoveRotation(targetRot);
-
-            elapsed += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
+            elapsed += Time.deltaTime;
+            yield return null;
         }
 
-        elapsed = 0;
+        cam.localRotation = startRot;
 
-        while (elapsed < rollDuration)
-        {
-            float t = elapsed / rollDuration;
-
-            Vector3 targetPos = Vector3.Lerp(midPos, endPos, t);
-            Quaternion targetRot = Quaternion.Lerp(endRotation, startRotation, t);
-
-            playerRb.MovePosition(targetPos);
-            playerRb.MoveRotation(targetRot);
-
-            elapsed += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-
-        playerRb.useGravity = true;
+        yield return new WaitForSeconds(combatRoll.skillCoolTime);
+        combatRoll.isSkillPossible = true;        
     }
-
 }
-        
-    
-    
-
-

@@ -1,37 +1,36 @@
-using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private Rigidbody playerRb;
-
+    [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] private CharacterController characterController;
     internal Vector3 MoveDir;
     private Vector2 _inputVector;
-    private float _initMoveSpeed = 6f;
-
-    private void Awake()
+    internal float gravity = 1f;
+    private float y_velocity = 0;
+       
+    private void Update()
     {
-        moveSpeed = _initMoveSpeed;
-    }
+        y_velocity += gravity * Time.deltaTime;
 
-    private void FixedUpdate()
-    {
-        playerRb.linearVelocity = MoveDir * moveSpeed;
-    }
-
-
-    public void OnMove(InputValue Input)
-    {
-        _inputVector = Input.Get<Vector2>();
-
+        // 입력에 따라 방향 계산
         Vector3 forward = Camera.main.transform.forward;
         Vector3 right = Camera.main.transform.right;
-        // 카메라가 바라보는 방향이 상하로 틀어져있을 수 있으니 y값은 0으로 만듦
         forward.y = 0f;
         right.y = 0f;
+        forward.Normalize();
+        right.Normalize();
 
         MoveDir = (right * _inputVector.x + forward * _inputVector.y).normalized;
+                
+        Vector3 motion = (MoveDir * moveSpeed + Vector3.down * y_velocity) * Time.deltaTime;
+        characterController.Move(motion);
+    }
+
+    public void OnMove(InputValue input)
+    {
+        _inputVector = input.Get<Vector2>();
     }
 }

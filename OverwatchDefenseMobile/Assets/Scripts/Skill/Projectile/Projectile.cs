@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 
@@ -8,20 +9,24 @@ public class Projectile : MonoBehaviour
     [SerializeField] Rigidbody _rigidbody;
     [SerializeField] Collider _collider;
     [SerializeField] ProjectileTarget target;
+    [SerializeField] ParticleSystem collisionEffect;
+    [SerializeField] AudioSource collisionSound;
+
     private int _id;
     private float _lifetime;
     private int _damage;
     private float _spawnTime;
     private bool _isReleased = false;
-
     public int Id { get { return _id; } }
 
     private ProjectilePoolManager _projectilePoolManager;
 
+       
+
     public void Initialize(Vector3 position, Vector3 direction, ProjectileSettings projectileSettings)
     {
         transform.position = position;
-
+        
         _id = projectileSettings.id;
         _lifetime = projectileSettings.lifetime;
         _damage = projectileSettings.damage;
@@ -33,6 +38,15 @@ public class Projectile : MonoBehaviour
         _rigidbody.linearVelocity = direction * projectileSettings.speed;
 
         _collider.isTrigger = false;
+
+        if (_id == 10001)
+        {
+            ParticleSystem effect = Instantiate(collisionEffect, Camera.main.transform.position + Camera.main.transform.forward, Quaternion.identity);
+            effect.Play();
+            collisionSound.Play();
+            effect.Clear();
+            Release();
+        }
     }
 
     public void InjectPoolManager(ProjectilePoolManager projectilePoolManager)
@@ -67,14 +81,25 @@ public class Projectile : MonoBehaviour
                 zomnic.TakeDamage(_damage);
                 zomnic.isSlowed = true;
             }
-        }
 
-        Release();
+        }
+        StartCoroutine(C_PlayEffect());
     }
 
     private void Release()
     {
+        if (_isReleased) return;
+
         _isReleased = true;
         _projectilePoolManager.ReturnProjectile(this);
+    }
+
+    private IEnumerator C_PlayEffect()
+    {
+        collisionEffect.Play();
+        collisionSound.Play();
+        
+        yield return new WaitForSeconds(collisionEffect.main.duration);
+        Release();
     }
 }
