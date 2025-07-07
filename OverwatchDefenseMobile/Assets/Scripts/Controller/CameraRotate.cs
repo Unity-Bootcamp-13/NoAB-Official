@@ -8,7 +8,7 @@ public class CameraRotate : MonoBehaviour
     [SerializeField] private Camera _camera;
     [SerializeField] private RectTransform _panelRectTransform;
     [SerializeField] private Transform _playerTransform;
-    [SerializeField] private float _rotateSensitivity;
+    [SerializeField] private float _rotateSensitivity;    
 
     private Dictionary<int, Vector2> _lastTouchPos = new Dictionary<int, Vector2>();
     private float _rotateHorizontal;
@@ -20,10 +20,8 @@ public class CameraRotate : MonoBehaviour
         _rotateVertical = transform.localEulerAngles.x;
     }
 
-
     private void Update()
-    {
-        
+    {        
         foreach (TouchControl touch in Touchscreen.current.touches)
         {
             
@@ -56,5 +54,5 @@ public class CameraRotate : MonoBehaviour
             _playerTransform.eulerAngles = new Vector3(0f, _rotateHorizontal, 0f);
             _camera.transform.localEulerAngles = new Vector3(_rotateVertical, 0f, 0f);
         }
-    }
+    }    
 }
