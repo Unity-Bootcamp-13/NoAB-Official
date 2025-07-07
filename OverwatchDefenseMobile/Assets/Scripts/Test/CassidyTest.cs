@@ -120,7 +120,7 @@ public class CassidyTest: Character
 
 
     public override void NormalAttack()
-    {
+    {        
         StartCoroutine(C_NormalAtk());
     }
 
@@ -136,7 +136,7 @@ public class CassidyTest: Character
         {
             if (hit.collider.CompareTag("Zomnic"))
             {
-                projectileManager.FireProjectile(Camera.main.transform.position, Camera.main.transform.forward, peacekeeperBullet);
+                projectileManager.FireProjectile(Camera.main.transform.position + Camera.main.transform.forward, Camera.main.transform.forward, peacekeeperBullet);
                 peacekeeper.isSkillPossible = false;
                 peacekeeperCurrentBulletCount--;
 
@@ -176,7 +176,6 @@ public class CassidyTest: Character
         yield return new WaitForSeconds(flashbang.skillCoolTime);
         flashbang.isSkillPossible = true;
     }
-
 
     public void Skill_CombatRoll()
     {
@@ -232,6 +231,6 @@ public class CassidyTest: Character
         cam.localRotation = startRot;
 
         yield return new WaitForSeconds(combatRoll.skillCoolTime);
-        combatRoll.isSkillPossible = true;
+        combatRoll.isSkillPossible = true;        
     }
 }
