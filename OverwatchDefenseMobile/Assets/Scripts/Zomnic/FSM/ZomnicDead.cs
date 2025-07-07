@@ -20,7 +20,9 @@ public class ZomnicDead : StateMachineBehaviour
         ZomnicPoolManager zomnicPoolManager = animator.GetComponent<Zomnic>().ZomnicPoolManager;
         GameObject zomnic = animator.gameObject;
 
-        zomnicPoolManager.ReturnZomnic(zomnic);
+        if (zomnic.GetComponent<ZomnicController>().isSelfDestructDead)
+            BaseHp.TakeDamage(100);
+        zomnicPoolManager.ReturnZomnic(zomnic);        
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
