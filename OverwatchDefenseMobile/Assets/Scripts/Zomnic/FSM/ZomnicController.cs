@@ -13,6 +13,7 @@ public class ZomnicController : MonoBehaviour
     [Header("Dead switch waiting time after SelfDestruct")]
     [SerializeField] private float DeadDelay = 4.0f;
 
+    internal bool isSelfDestructDead = false;
     private bool _reachedBasePoint = false;
     private float _reachTimer = 0f;
     private bool _hasTriggeredSelfDestruct = false;
@@ -23,6 +24,7 @@ public class ZomnicController : MonoBehaviour
         _reachedBasePoint = false;
         _reachTimer = 0f;
         _hasTriggeredSelfDestruct = false;
+        isSelfDestructDead = false;
         _selfDestructTimer = 0f;
     }
 
@@ -46,6 +48,7 @@ public class ZomnicController : MonoBehaviour
         if (_hasTriggeredSelfDestruct && (_selfDestructTimer += Time.deltaTime) >= DeadDelay)
         {
             zomnic.Animator.SetTrigger("dead");
+            isSelfDestructDead = true;
         }
 
         if (_reachedBasePoint && (_reachTimer += Time.deltaTime) >= selfDestructDelay)
