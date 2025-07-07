@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class Cassidy: Character
+public class Cassidy : Character
 {    
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private CharacterController characterController;
@@ -12,10 +12,10 @@ public class Cassidy: Character
     [SerializeField] AudioSource rollingSound;
     [SerializeField] AudioSource reloadSound;
 
-    private int peacekeeperCurrentBulletCount;
+    internal int peacekeeperCurrentBulletCount;
 
     [Header("Peacekeeper")]
-    ProjectileSettings peacekeeperBullet = new ProjectileSettings
+    public ProjectileSettings peacekeeperBullet = new ProjectileSettings
     {
         id = 10001,
         speed = 500,
@@ -25,7 +25,7 @@ public class Cassidy: Character
         collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative
     };
 
-    SkillSettings peacekeeper = new SkillSettings
+    public SkillSettings peacekeeper = new SkillSettings
     {
         skillCoolTime = 0.5f,
         bulletReloadTime = 1.5f,
@@ -34,7 +34,7 @@ public class Cassidy: Character
     };
 
     [Header("Flashbang")]
-    ProjectileSettings flashbangBullet = new ProjectileSettings
+    public ProjectileSettings flashbangBullet = new ProjectileSettings
     {
         id = 10002,
         speed = 30f,
@@ -44,7 +44,7 @@ public class Cassidy: Character
         collisionDetectionMode = CollisionDetectionMode.Discrete
     };
 
-    SkillSettings flashbang = new SkillSettings
+    public SkillSettings flashbang = new SkillSettings
     {
         skillCoolTime = 10,
         skillDuration = 1,
@@ -52,14 +52,14 @@ public class Cassidy: Character
     };
 
     [Header("Combat Roll")]
-    SkillSettings combatRoll = new SkillSettings
+    public SkillSettings combatRoll = new SkillSettings
     {
         skillCoolTime = 6f,
         isSkillPossible = true
     };
 
     [Header("Deadeye")]
-    UltimateSettings deadeye = new UltimateSettings
+    public UltimateSettings deadeye = new UltimateSettings
     { 
         maxUltimatePoint = 1800,
         pointPerDamage =  1,

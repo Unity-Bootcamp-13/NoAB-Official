@@ -10,7 +10,7 @@ public class CassidyUlt : MonoBehaviour
     private HashSet<Zomnic> _targetSet = new HashSet<Zomnic>();
     private Queue<Zomnic> _shotOrder = new Queue<Zomnic>();
 
-    internal float currentUltPoint;
+    internal static float currentUltPoint;
     private UltimateSettings _deadeye;
     private bool _isAiming = false;
 

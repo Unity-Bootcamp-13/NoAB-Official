@@ -1,11 +1,16 @@
 using UnityEngine;
-using UnityEngine.UI;
 
-public class BaseHp 
-{     
-    [SerializeField] private Slider _slider;
-    public static int currentHp = 3000;          
-    public bool GameOver => currentHp <= 0;              
+public class BaseHp : MonoBehaviour
+{
+    public const int maxHp = 3000;
+    internal static int currentHp;
+
+    public bool GameOver => maxHp <= 0;
+
+    private void Awake()
+    {
+        currentHp = maxHp;
+    }
 
     public static void TakeDamage(int damage)
     {      
