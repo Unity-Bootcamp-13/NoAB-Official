@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject DefeatEffect;
     [SerializeField] TextMeshProUGUI DefeatText;
 
-    internal float PlayTime = 10;
+    internal float PlayTime = 150;
     private bool _isGameEnded = false;
 
     private void Update()
