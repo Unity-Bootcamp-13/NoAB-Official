@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 99182b15849943e49821103ffaabc559
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _Noise: {fileID: 2800000, guid: f439bf46c90ab6b49bd5efa93c4f8585, type: 3}
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 25210
+  packageName: FX Lightning II free
+  packageVersion: 1.1
+  assetPath: Assets/FX_Kandol_Pack/FX_lightning_II/Shaders/built-in/Flipbook_Effects_built-in.shader
+  uploadId: 660122
