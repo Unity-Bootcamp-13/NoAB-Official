@@ -7,6 +7,8 @@ public class CassidyUlt : MonoBehaviour
     [SerializeField] private GameObject UltMarkerPrefab;
     [SerializeField] private Transform UltMarkerParent;
     [SerializeField] private Rigidbody TumbleweedRB;
+    [SerializeField] AudioSource UltStartSound;
+    [SerializeField] AudioSource UltAttackSound;
 
     private List<(Zomnic zomnic, float distance)> _sortedTargets = new List<(Zomnic zomnic, float distance)>();
     private Dictionary<Zomnic, float> _damageTimers = new Dictionary<Zomnic, float>();
@@ -71,6 +73,8 @@ public class CassidyUlt : MonoBehaviour
             return;
         }
 
+        UltStartSound.Play();
+
         _isUltActive = true;
         _aimingTimer = 0;
 
@@ -107,6 +111,8 @@ public class CassidyUlt : MonoBehaviour
     public void OnSecondUltimateButtonInput()
     {
         if (!_isUltActive) return;
+
+        UltStartSound.Stop();
 
         FireUltimate();
         EndUltEffect();
@@ -172,6 +178,7 @@ public class CassidyUlt : MonoBehaviour
             int damage = (int)(_damageTimers[zomnic] * _deadeye.damagePerSecond);
 
             zomnic.TakeDamage(damage);
+            UltAttackSound.Play();
         }
     }
 
@@ -255,5 +262,5 @@ public class CassidyUlt : MonoBehaviour
         Vector3 right = transform.right;
 
         TumbleweedRB.AddForce(right * 5, ForceMode.Impulse);
-    }
+    }       
 }
