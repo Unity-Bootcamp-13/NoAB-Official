@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button flashbangButton;
     [SerializeField] private Slider flashbangSlider;
     [SerializeField] private TextMeshProUGUI flashbangText;
+    // cassidy ult deadeye
+    [SerializeField] private CassidyUlt cassidyUlt;
+    [SerializeField] private Image ultPannelImage;
+    [SerializeField] private ParticleSystem dustParticle;
 
     private float combatRollTimer;
     private bool setCombatRollTimer;
@@ -100,6 +105,22 @@ public class UIManager : MonoBehaviour
             flashbangText.gameObject.SetActive(false);
             flashbangSlider.value = 0;
             setFlashbangTimer = false;
+        }
+
+        // deadeye
+        if (cassidyUlt.IsUltActive)
+        {
+            ultPannelImage.gameObject.SetActive(true);
+            
+            ultPannelImage.CrossFadeAlpha(0.7f, 1f, false);
+            dustParticle.Play();
+        }
+        else
+        {
+            ultPannelImage.gameObject.SetActive(false);
+            ultPannelImage.canvasRenderer.SetAlpha(0f);
+            dustParticle.Stop();
+            dustParticle.Clear();
         }
     }
 }

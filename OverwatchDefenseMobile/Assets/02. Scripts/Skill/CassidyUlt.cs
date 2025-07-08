@@ -4,24 +4,32 @@ using UnityEngine;
 public class CassidyUlt : MonoBehaviour
 {
     [SerializeField] private ZomnicPoolManager zomnicPoolManager;
+    [SerializeField] private GameObject UltMarkerPrefab;
+    [SerializeField] private Transform UltMarkerParent;
+    [SerializeField] private Rigidbody TumbleweedRB;
 
     private List<(Zomnic zomnic, float distance)> _sortedTargets = new List<(Zomnic zomnic, float distance)>();
     private Dictionary<Zomnic, float> _damageTimers = new Dictionary<Zomnic, float>();
     private HashSet<Zomnic> _targetSet = new HashSet<Zomnic>();
     private Queue<Zomnic> _shotOrder = new Queue<Zomnic>();
+    private Dictionary<Zomnic, UltMarkerUI> _ultMarkers = new Dictionary<Zomnic, UltMarkerUI>();
 
     internal static float currentUltPoint;
     private UltimateSettings _deadeye;
     private bool _isUltActive = false;
     private float _aimingTimer;
+    private float _tumbleweedTimer = 0;
+
+    public bool IsUltActive { get { return _isUltActive; } }
 
     private void Awake()
     {
         currentUltPoint = 0;
+        TumbleweedRB.gameObject.SetActive(false);
     }
 
     private void OnEnable()
-    {
+    {        
         Zomnic.OnZomnicDamaged += IncreaseUltPointByDamage;
     }
 
@@ -32,7 +40,16 @@ public class CassidyUlt : MonoBehaviour
 
     private void Update()
     {
+        currentUltPoint = 1800;
+
         IncreaseUltPointPerSecond();
+
+        _tumbleweedTimer += Time.deltaTime;
+
+        if (_tumbleweedTimer > 10)
+        {
+            TumbleweedRB.gameObject.SetActive(false);
+        }
 
         if (!_isUltActive)
             return;
@@ -41,9 +58,9 @@ public class CassidyUlt : MonoBehaviour
         IncreaseDamage();
                
         _aimingTimer += Time.deltaTime;
-
+        
         // if (_aimingTimer >= 7f)
-            // 궁 실행 취소로 수정 OnUltimateButtonUp();
+        // 궁 실행 취소로 수정 OnUltimateButtonUp();
     }
 
     public void OnFirstUltimateButtonInput()
@@ -80,9 +97,11 @@ public class CassidyUlt : MonoBehaviour
             _shotOrder.Enqueue(entry.zomnic);
             _targetSet.Add(entry.zomnic);
             _damageTimers[entry.zomnic] = 0f;
+            CreateUltMarker(entry.zomnic);
         }
 
         StartUltEffect();
+        RollTumbleweed();
     }
 
     public void OnSecondUltimateButtonInput()
@@ -91,6 +110,12 @@ public class CassidyUlt : MonoBehaviour
 
         FireUltimate();
         EndUltEffect();
+
+        foreach (var zomnic in _ultMarkers.Keys)
+        {
+            Destroy(_ultMarkers[zomnic].gameObject);
+        }
+        _ultMarkers.Clear();
 
         _isUltActive = false;
         _deadeye.isUltimatePossible = false;
@@ -109,6 +134,8 @@ public class CassidyUlt : MonoBehaviour
             _shotOrder.Enqueue(zomnic);
             _targetSet.Add(zomnic);
             _damageTimers[zomnic] = 0f;
+
+            CreateUltMarker(zomnic);
         }
     }
 
@@ -122,6 +149,14 @@ public class CassidyUlt : MonoBehaviour
 
             float timer = _damageTimers[zomnic] + Time.deltaTime;
             _damageTimers[zomnic] = timer;
+
+            int damage = (int)(_damageTimers[zomnic] * _deadeye.damagePerSecond);
+            Debug.Log(damage);
+
+            if (_ultMarkers.TryGetValue(zomnic, out UltMarkerUI marker))
+            {
+                marker.UpdateDamage(damage);
+            }
         }
     }
 
@@ -135,6 +170,7 @@ public class CassidyUlt : MonoBehaviour
             if (!IsObjectVisibleToCamera(zomnic.gameObject)) continue;
 
             int damage = (int)(_damageTimers[zomnic] * _deadeye.damagePerSecond);
+
             zomnic.TakeDamage(damage);
         }
     }
@@ -148,7 +184,7 @@ public class CassidyUlt : MonoBehaviour
         }
         else
         {
-            Debug.Log("궁극기사용가능");
+           // Debug.Log("궁극기사용가능");
             _deadeye.isUltimatePossible = true;
         }
     }
@@ -196,5 +232,28 @@ public class CassidyUlt : MonoBehaviour
     public void InjectUltimateSettings(UltimateSettings deadeye)
     {
         _deadeye = deadeye;
+    }
+    private void CreateUltMarker(Zomnic zomnic)
+    {
+        if (_ultMarkers.ContainsKey(zomnic)) return;
+
+        GameObject markerGO = Instantiate(UltMarkerPrefab, UltMarkerParent);
+        UltMarkerUI markerUI = markerGO.GetComponent<UltMarkerUI>();
+
+        Transform headTransform = zomnic.GetHeadTransform(); // 머리 위치 Transform (직접 만들거나 바꿔도 됨)
+        markerUI.Init(zomnic, headTransform);
+
+        _ultMarkers.Add(zomnic, markerUI);
+    }
+
+    private void RollTumbleweed()
+    {
+        TumbleweedRB.gameObject.SetActive(true);
+        TumbleweedRB.gameObject.transform.position = transform.position + (transform.forward * 4 - transform.right * 4);
+        _tumbleweedTimer = 0;
+
+        Vector3 right = transform.right;
+
+        TumbleweedRB.AddForce(right * 5, ForceMode.Impulse);
     }
 }

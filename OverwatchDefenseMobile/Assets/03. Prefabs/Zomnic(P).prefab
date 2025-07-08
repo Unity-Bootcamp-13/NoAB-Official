@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7555964126845047300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4835844063981260142}
+  m_Layer: 6
+  m_Name: HeadPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4835844063981260142
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7555964126845047300}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4186674124789960646}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4436244173205645357
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -402,7 +433,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 368699091d778484298fa0b8a046c15a, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 4835844063981260142}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 368699091d778484298fa0b8a046c15a, type: 3}
       insertIndex: -1
@@ -484,8 +518,7 @@ MonoBehaviour:
   agent: {fileID: 6040882613475084938}
   basePoint: {x: -14.5, y: 35, z: 64.5}
   animator: {fileID: -7734090304702670029}
-  maxHp: 200
-  isSlowed: 0
+  headTransform: {fileID: 4835844063981260142}
 --- !u!114 &1268723870520830734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -525,3 +558,8 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1.1163437, z: 0}
+--- !u!4 &4186674124789960646 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 368699091d778484298fa0b8a046c15a, type: 3}
+  m_PrefabInstance: {fileID: 4436244173205645357}
+  m_PrefabAsset: {fileID: 0}

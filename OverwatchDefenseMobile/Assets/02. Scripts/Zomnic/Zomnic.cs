@@ -9,15 +9,16 @@ public class Zomnic : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Vector3 basePoint;
     [SerializeField] private Animator animator;
+    [SerializeField] private Transform headTransform;
+    public Transform GetHeadTransform() => headTransform;
 
-    [Header("Zomnic base info")]
-    [SerializeField] int maxHp = 200;
-
+    private int _maxHp = 450;
     private int _currentHp;
     private ZomnicPoolManager _zomnicPoolManager;
 
     public Vector3 BasePoint { get { return basePoint; } }
-    public int MaxHP { get { return maxHp; } }
+    public int MaxHP { get { return _maxHp; } }
+    public int CurrentHP { get { return _currentHp; } }
     public Animator Animator { get { return animator; } }
     public bool IsDead => _currentHp <= 0;
     public ZomnicPoolManager ZomnicPoolManager { get { return _zomnicPoolManager; } }
@@ -27,7 +28,7 @@ public class Zomnic : MonoBehaviour
 
     private void OnEnable()
     {
-        _currentHp = MaxHP;
+        _currentHp = _maxHp;
         animator.Rebind();
         animator.Update(0f);
         isSlowed = false;
