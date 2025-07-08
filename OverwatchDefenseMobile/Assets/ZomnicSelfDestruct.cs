@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ZomnicDead : StateMachineBehaviour
+public class ZomnicSelfDestruct : StateMachineBehaviour
 {
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     //override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -14,13 +14,13 @@ public class ZomnicDead : StateMachineBehaviour
     //    
     //}
 
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
+    //OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        ZomnicPoolManager zomnicPoolManager = animator.GetComponent<Zomnic>().ZomnicPoolManager;
         GameObject zomnic = animator.gameObject;
-       
-        zomnicPoolManager.ReturnZomnic(zomnic);        
+
+        if (zomnic.GetComponent<ZomnicController>().isSelfDestructDead)
+            BaseHp.TakeDamage(100);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

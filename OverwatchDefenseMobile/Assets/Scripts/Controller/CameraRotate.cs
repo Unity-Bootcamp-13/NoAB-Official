@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem.Controls;
 
 public class CameraRotate : MonoBehaviour
-{
-    [SerializeField] private Camera _camera;
+{    
     [SerializeField] private RectTransform _panelRectTransform;
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private float _rotateSensitivity;    
@@ -21,7 +20,10 @@ public class CameraRotate : MonoBehaviour
     }
 
     private void Update()
-    {        
+    {
+        if (Cassidy.isRolling)
+            return;
+
         foreach (TouchControl touch in Touchscreen.current.touches)
         {
             
@@ -52,7 +54,7 @@ public class CameraRotate : MonoBehaviour
             _rotateVertical = Mathf.Clamp(_rotateVertical, -30f, 30f);
 
             _playerTransform.eulerAngles = new Vector3(0f, _rotateHorizontal, 0f);
-            _camera.transform.localEulerAngles = new Vector3(_rotateVertical, 0f, 0f);
+            Camera.main.transform.localEulerAngles = new Vector3(_rotateVertical, 0f, 0f);
         }
     }    
 }

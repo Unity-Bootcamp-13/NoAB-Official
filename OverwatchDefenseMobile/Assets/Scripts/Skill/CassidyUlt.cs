@@ -12,7 +12,8 @@ public class CassidyUlt : MonoBehaviour
 
     internal static float currentUltPoint;
     private UltimateSettings _deadeye;
-    private bool _isAiming = false;
+    private bool _isUltActive = false;
+    private float _aimingTimer;
 
     private void Awake()
     {
@@ -33,20 +34,19 @@ public class CassidyUlt : MonoBehaviour
     {
         IncreaseUltPointPerSecond();
 
-        if (!_isAiming)
+        if (!_isUltActive)
             return;
 
         TrackInput();
         IncreaseDamage();
+               
+        _aimingTimer += Time.deltaTime;
 
-        float aimingTimer = 0f;
-        aimingTimer += Time.deltaTime;
-
-        if (aimingTimer >= 7f)
-            OnUltimateButtonUp();
+        // if (_aimingTimer >= 7f)
+            // 궁 실행 취소로 수정 OnUltimateButtonUp();
     }
 
-    public void OnUltimateButtonDown()
+    public void OnFirstUltimateButtonInput()
     {
         if (!_deadeye.isUltimatePossible)
         {
@@ -54,7 +54,8 @@ public class CassidyUlt : MonoBehaviour
             return;
         }
 
-        _isAiming = true;
+        _isUltActive = true;
+        _aimingTimer = 0;
 
         _sortedTargets.Clear();
         _damageTimers.Clear();
@@ -84,14 +85,14 @@ public class CassidyUlt : MonoBehaviour
         StartUltEffect();
     }
 
-    public void OnUltimateButtonUp()
+    public void OnSecondUltimateButtonInput()
     {
-        if (!_isAiming) return;
+        if (!_isUltActive) return;
 
         FireUltimate();
         EndUltEffect();
 
-        _isAiming = false;
+        _isUltActive = false;
         _deadeye.isUltimatePossible = false;
     }
 

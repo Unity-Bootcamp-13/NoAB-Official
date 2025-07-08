@@ -42,11 +42,18 @@ public class Projectile : MonoBehaviour
         if (_id == 10001)
         {
             ParticleSystem effect = Instantiate(collisionEffect, Camera.main.transform.position + Camera.main.transform.forward, Quaternion.identity);
-            effect.Play();
-            collisionSound.Play();
             effect.Clear();
-            Release();
+            effect.Play();
+
+            collisionSound.Play();
+            StartCoroutine(C_ReleaseAfterSound());
         }
+    }
+
+    private IEnumerator C_ReleaseAfterSound()
+    {
+        yield return new WaitForSeconds(collisionSound.clip.length);
+        Release();
     }
 
     public void InjectPoolManager(ProjectilePoolManager projectilePoolManager)
@@ -82,8 +89,8 @@ public class Projectile : MonoBehaviour
                 zomnic.isSlowed = true;
             }
 
-        }
-        StartCoroutine(C_PlayEffect());
+            StartCoroutine(C_PlayEffect());
+        }  
     }
 
     private void Release()

@@ -13,6 +13,7 @@ public class Cassidy : Character
     [SerializeField] AudioSource reloadSound;
 
     internal int peacekeeperCurrentBulletCount;
+    internal static bool isRolling = false;
 
     [Header("Peacekeeper")]
     public ProjectileSettings peacekeeperBullet = new ProjectileSettings
@@ -98,12 +99,12 @@ public class Cassidy : Character
         // 궁극기
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
-            cassidyUlt.OnUltimateButtonDown();
+            cassidyUlt.OnFirstUltimateButtonInput();
         }
 
         if (Keyboard.current.qKey.wasReleasedThisFrame)
         {
-            cassidyUlt.OnUltimateButtonUp();
+            cassidyUlt.OnSecondUltimateButtonInput();
         }
 
         // if (peacekeeper.isSkillPossible)
@@ -112,12 +113,12 @@ public class Cassidy : Character
 
     public void OnPointerDown()
     {
-        cassidyUlt.OnUltimateButtonDown();
+        cassidyUlt.OnFirstUltimateButtonInput();
     }
 
     public void OnPointerUp()
     {
-        cassidyUlt.OnUltimateButtonUp();
+        cassidyUlt.OnSecondUltimateButtonInput();
     }
 
 
@@ -143,12 +144,6 @@ public class Cassidy : Character
         if (!peacekeeper.isSkillPossible)
             yield break;
 
-        if (peacekeeperCurrentBulletCount <= 0)
-        {
-            StartCoroutine(C_PeacekeeperReload());
-            yield break;
-        }
-
         projectileManager.FireProjectile(Camera.main.transform.position + Camera.main.transform.forward, Camera.main.transform.forward, peacekeeperBullet);
         peacekeeper.isSkillPossible = false;
         peacekeeperCurrentBulletCount--;
@@ -157,9 +152,20 @@ public class Cassidy : Character
         Zomnic zomnic = hit.collider.GetComponent<Zomnic>();
         zomnic.TakeDamage(peacekeeperBullet.damage);
 
-        yield return new WaitForSeconds(peacekeeper.skillCoolTime);
-                
+        if (peacekeeperCurrentBulletCount <= 0)
+        {
+            StartCoroutine(C_PeacekeeperReload());
+            yield break;
+        }
+        else
+            yield return new WaitForSeconds(peacekeeper.skillCoolTime);
+
         peacekeeper.isSkillPossible = true;
+    }
+
+    public void Reload()
+    {
+        StartCoroutine(C_PeacekeeperReload());
     }
 
     public IEnumerator C_PeacekeeperReload()
@@ -171,9 +177,8 @@ public class Cassidy : Character
         peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
         Debug.Log("재장전 완료");
         peacekeeper.isSkillPossible = true;
-    }
-      
-   
+    }     
+  
     public void Skill_Flashbang()
     {
         StartCoroutine(C_flashbang());
@@ -215,6 +220,8 @@ public class Cassidy : Character
 
         rollingSound.Play();
 
+        isRolling = true;
+
         if (inputVector.sqrMagnitude > 0f)
             rolling_dir = inputVector.normalized;
         else
@@ -247,6 +254,7 @@ public class Cassidy : Character
         }
 
         cam.localRotation = startRot;
+        isRolling = false;
 
         yield return new WaitForSeconds(combatRoll.skillCoolTime);
         combatRoll.isSkillPossible = true;        
