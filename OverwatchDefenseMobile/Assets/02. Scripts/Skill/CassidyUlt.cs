@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CassidyUlt : MonoBehaviour
 {
@@ -149,12 +150,8 @@ public class CassidyUlt : MonoBehaviour
             _damageTimers[zomnic] = timer;
 
             int damage = (int)(_damageTimers[zomnic] * _deadeye.damagePerSecond);
-            Debug.Log(damage);
 
-            if (_ultMarkers.TryGetValue(zomnic, out UltMarkerUI marker))
-            {
-                marker.UpdateDamage(damage);
-            }
+            UpdateUIMarker(zomnic, damage);
         }
     }
 
@@ -168,10 +165,12 @@ public class CassidyUlt : MonoBehaviour
             if (!IsObjectVisibleToCamera(zomnic.gameObject)) continue;
 
             int damage = (int)(_damageTimers[zomnic] * _deadeye.damagePerSecond);
-
+            
             zomnic.TakeDamage(damage);
             UltAttackSound.Play();
         }
+
+        currentUltPoint = 0;
     }
 
     public void IncreaseUltPointPerSecond()
@@ -199,6 +198,8 @@ public class CassidyUlt : MonoBehaviour
 
     public bool IsObjectVisibleToCamera(GameObject go)
     {
+        if (!go.gameObject.activeSelf) return false;
+
         Vector3 viewportPoint = Camera.main.WorldToViewportPoint(go.transform.position);
         bool isNotInCameraView = viewportPoint.z <= 0 ||
                                  viewportPoint.x < 0 ||
@@ -220,9 +221,11 @@ public class CassidyUlt : MonoBehaviour
     {
         _deadeye = deadeye;
     }
+
     private void CreateUltMarker(Zomnic zomnic)
     {
         if (_ultMarkers.ContainsKey(zomnic)) return;
+        if (!IsObjectVisibleToCamera(zomnic.gameObject)) return;
 
         GameObject markerGO = Instantiate(UltMarkerPrefab, UltMarkerParent);
         UltMarkerUI markerUI = markerGO.GetComponent<UltMarkerUI>();
@@ -231,6 +234,23 @@ public class CassidyUlt : MonoBehaviour
         markerUI.Init(zomnic, headTransform);
 
         _ultMarkers.Add(zomnic, markerUI);
+    }
+
+    private void UpdateUIMarker(Zomnic zomnic, int damage)
+    {
+        if (!_ultMarkers.ContainsKey(zomnic)) return;
+
+        if (damage >= zomnic.CurrentHP &&
+            IsObjectVisibleToCamera(zomnic.gameObject))
+        {
+            _ultMarkers[zomnic]._scale = 1f;
+        }
+        else
+        {
+            _ultMarkers[zomnic]._scale = 0f;
+        }
+
+        _ultMarkers[zomnic].skullImage.rectTransform.localScale = Vector3.one * _ultMarkers[zomnic]._scale;
     }
 
     private void RollTumbleweed()
