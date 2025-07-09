@@ -2,8 +2,6 @@ using TMPro;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using Mono.Cecil.Cil;
-using Unity.VisualScripting;
 
 public class UIManager : MonoBehaviour
 {
@@ -18,9 +16,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject ultPossibleTurnEffect;
     [SerializeField] private AudioSource skillPossibleTurnSound;
     [SerializeField] private AudioSource ultPossibleTurnSound;    
-   
+       
     // peacekeeper
     [SerializeField] private TextMeshProUGUI peacekeeperCurrentBullet;
+    
     // combatroll
     [SerializeField] private Button combatRollButton;
     [SerializeField] private Slider combatRollSlider;
@@ -148,16 +147,9 @@ public class UIManager : MonoBehaviour
         Debug.Log(ultPossible);
         ultimateGauge.gameObject.SetActive(!ultPossible);
         ultimatePossible.SetActive(ultPossible);                       
-           
-        
-            //StartCoroutine(C_SkillPossibleTurnEffect(combatrollPossibleTurnEffect, skillPossibleTurnSound));                    
-
-            // StartCoroutine(C_SkillPossibleTurnEffect(flashbangPossibleTurnEffect, skillPossibleTurnSound));
-
-
+         
         if (ultPossible && rotateUltEffect == false)
             StartCoroutine(C_UltPossibleTurnEffect());
-
 
         if (ultPossible && !rotateUltEffect)
         {
@@ -200,6 +192,7 @@ public class UIManager : MonoBehaviour
     private IEnumerator C_UltPossibleTurnEffect()
     {        
         ultPossibleTurnEffect.SetActive(true);
+        ultPossibleTurnSound.volume *= 5;
         ultPossibleTurnSound.Play();
 
         yield return new WaitForSeconds(ultPossibleTurnSound.clip.length);

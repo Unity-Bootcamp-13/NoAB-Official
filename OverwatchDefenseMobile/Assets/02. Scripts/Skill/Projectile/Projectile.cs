@@ -32,6 +32,7 @@ public class Projectile : MonoBehaviour
         _damage = projectileSettings.damage;
         _spawnTime = Time.time;
         _isReleased = false;
+        _isCoStarted = false;
 
         _rigidbody.useGravity = projectileSettings.useGravity;
         _rigidbody.collisionDetectionMode = projectileSettings.collisionDetectionMode;
@@ -41,9 +42,9 @@ public class Projectile : MonoBehaviour
 
         if (_id == 10001)
         {
-            ParticleSystem effect = Instantiate(collisionEffect, Camera.main.transform.position + Camera.main.transform.forward, Quaternion.identity);
-            effect.Clear();
-            effect.Play();
+          //  ParticleSystem effect = Instantiate(collisionEffect, Camera.main.transform.position + Camera.main.transform.forward, Quaternion.identity);
+          //  effect.Clear();
+          //  effect.Play();
 
             collisionSound.Play();
             StartCoroutine(C_ReleaseAfterSound());
@@ -63,16 +64,15 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        if (_isReleased) return;
+        if (_isReleased ||
+            _isCoStarted) return;
 
         if (Time.time - _spawnTime > _lifetime)
         {
-            _lifetime = 9999;
-
             if (_id == 10001)
                 Release();
             else if (_id == 10002)
-                StartCoroutine(C_PlayEffect());
+                StartCoroutine(C_PlayFlashbangEffect());
         }
     }
 
@@ -94,7 +94,8 @@ public class Projectile : MonoBehaviour
                 zomnic.isSlowed = true;
             }
             
-            StartCoroutine(C_PlayEffect());
+            if (!_isCoStarted)
+                StartCoroutine(C_PlayFlashbangEffect());
         }  
     }
 
@@ -106,8 +107,10 @@ public class Projectile : MonoBehaviour
         _projectilePoolManager.ReturnProjectile(this);
     }
 
-    private IEnumerator C_PlayEffect()
+    private bool _isCoStarted;
+    private IEnumerator C_PlayFlashbangEffect()
     {
+        _isCoStarted = true;
         collisionEffect.Play();
         collisionSound.Play();
         

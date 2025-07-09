@@ -12,8 +12,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject DefeatEffect;
     [SerializeField] TextMeshProUGUI DefeatText;
 
+    [SerializeField] AudioSource VictorySound;
+    [SerializeField] AudioSource DefeatSound;
+    [SerializeField] AudioSource Remain10sSound;
+    [SerializeField] AudioSource Remain30sSound;
+
     internal float PlayTime = 150;
     private bool _isGameEnded = false;
+    private bool _remain30 = false;
+    private bool _remain10 = false;
 
     private void Update()
     {
@@ -21,6 +28,18 @@ public class GameManager : MonoBehaviour
 
         PlayTime -= Time.deltaTime;
         if (PlayTime < 0) PlayTime = 0;
+
+        if (!_remain30 && PlayTime <= 31)
+        {
+            _remain30 = true;
+            Remain30sSound.Play();
+        }
+
+        if (!_remain10 && PlayTime <= 11)
+        {
+            _remain10 = true;
+            Remain10sSound.Play();
+        }
 
         if (BaseHp.GameOver)
         {
@@ -32,6 +51,8 @@ public class GameManager : MonoBehaviour
             _isGameEnded = true;
             StartCoroutine(Victory());
         }
+
+
     }
 
     private IEnumerator Victory()
@@ -40,8 +61,9 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
         VictoryText.gameObject.SetActive(true);
+        VictorySound.Play();
 
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(VictorySound.clip.length);
         VictoryEffect.SetActive(false);
 
         yield return new WaitForSeconds(2);
@@ -54,8 +76,9 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
         DefeatText.gameObject.SetActive(true);
+        DefeatSound.Play();
 
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(DefeatSound.clip.length);
         DefeatEffect.SetActive(false);
 
         yield return new WaitForSeconds(2);

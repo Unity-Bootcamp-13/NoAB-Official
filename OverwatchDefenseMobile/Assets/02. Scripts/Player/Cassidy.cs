@@ -9,11 +9,13 @@ public class Cassidy : Character
     [SerializeField] private CharacterController characterController;
     [SerializeField] private ProjectileManager projectileManager;
     [SerializeField] private CassidyUlt cassidyUlt;
-    [SerializeField] AudioSource rollingSound;
-    [SerializeField] AudioSource reloadSound;
+    [SerializeField] private AudioSource rollingSound;
+    [SerializeField] private AudioSource reloadSound;
+    [SerializeField] private GameObject peacekeeperEffect;
 
     internal int peacekeeperCurrentBulletCount;
     internal static bool isRolling = false;
+    internal bool normalAtk = false;
 
     [Header("Peacekeeper")]
     public ProjectileSettings peacekeeperBullet = new ProjectileSettings
@@ -38,8 +40,8 @@ public class Cassidy : Character
     public ProjectileSettings flashbangBullet = new ProjectileSettings
     {
         id = 10002,
-        speed = 30f,
-        lifetime = 1f,
+        speed = 20f,
+        lifetime = 0.5f,
         damage = 50,
         useGravity = true,
         collisionDetectionMode = CollisionDetectionMode.Discrete
@@ -48,7 +50,7 @@ public class Cassidy : Character
     public SkillSettings flashbang = new SkillSettings
     {
         skillCoolTime = 10,
-        skillDuration = 1,
+        skillDuration = 0.9f,
         isSkillPossible = true
     };
 
@@ -110,8 +112,8 @@ public class Cassidy : Character
             cassidyUlt.OnSecondUltimateButtonInput();
         }
 
-        // if (peacekeeper.isSkillPossible)
-        //     NormalAttack();
+        if (peacekeeper.isSkillPossible)
+             NormalAttack();
     }
 
 
@@ -154,10 +156,13 @@ public class Cassidy : Character
         projectileManager.FireProjectile(Camera.main.transform.position + Camera.main.transform.forward, Camera.main.transform.forward, peacekeeperBullet);
         peacekeeper.isSkillPossible = false;
         peacekeeperCurrentBulletCount--;
+        peacekeeperEffect.SetActive(true);
 
         Debug.Log("총알 발사");
         Zomnic zomnic = hit.collider.GetComponent<Zomnic>();
         zomnic.TakeDamage(peacekeeperBullet.damage);
+        yield return new WaitForSeconds(0.15f);
+        peacekeeperEffect.SetActive(false);
 
         if (peacekeeperCurrentBulletCount <= 0)
         {
@@ -165,7 +170,9 @@ public class Cassidy : Character
             yield break;
         }
         else
-            yield return new WaitForSeconds(peacekeeper.skillCoolTime);
+        {
+            yield return new WaitForSeconds(peacekeeper.skillCoolTime - 0.15f);
+        }
 
         peacekeeper.isSkillPossible = true;
     }
@@ -208,7 +215,7 @@ public class Cassidy : Character
             Debug.Log("섬광탄 사용불가");
             yield break;
         }
-        projectileManager.FireProjectile(Camera.main.transform.position, (Camera.main.transform.forward + Camera.main.transform.up * 0.5f).normalized, flashbangBullet);
+        projectileManager.FireProjectile(Camera.main.transform.position, Camera.main.transform.forward.normalized, flashbangBullet);
         flashbang.isSkillPossible = false;
 
         yield return new WaitForSeconds(flashbang.skillCoolTime);
