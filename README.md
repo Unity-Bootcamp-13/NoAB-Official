@@ -14,3 +14,8 @@ ___
 + Test: 테스트 코드 추가 및 수정
 + Perf: 성능 개선 (ex. 반복문 최적화)
 + Build: 빌드 관련 파일 수정 (ex. webpack, gradle 설정 등)
+
+
+2025.07.09 10🕛
+게임 시연 영상
+https://github.com/user-attachments/assets/894b3f3e-ecdc-49b0-b31c-30f0a7abbab0
