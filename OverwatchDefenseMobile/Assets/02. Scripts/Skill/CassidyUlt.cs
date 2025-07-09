@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class CassidyUlt : MonoBehaviour
 {
@@ -243,14 +242,22 @@ public class CassidyUlt : MonoBehaviour
         if (damage >= zomnic.CurrentHP &&
             IsObjectVisibleToCamera(zomnic.gameObject))
         {
-            _ultMarkers[zomnic]._scale = 1f;
+            _ultMarkers[zomnic].scale = 1f;
+            _ultMarkers[zomnic].skullIcon.gameObject.SetActive(true);
+        }
+        else if (damage < zomnic.CurrentHP &&
+                 IsObjectVisibleToCamera(zomnic.gameObject))
+        {
+            _ultMarkers[zomnic].scale = 1f;
+            float outerCircleScale = -(1 / (float)zomnic.CurrentHP) * damage + 1.65f;
+            _ultMarkers[zomnic].outerCircle.transform.localScale = Vector3.one * outerCircleScale;
         }
         else
         {
-            _ultMarkers[zomnic]._scale = 0f;
+            _ultMarkers[zomnic].scale = 0f;
         }
 
-        _ultMarkers[zomnic].skullImage.rectTransform.localScale = Vector3.one * _ultMarkers[zomnic]._scale;
+        _ultMarkers[zomnic].transform.localScale = Vector3.one * _ultMarkers[zomnic].scale;
     }
 
     private void RollTumbleweed()
