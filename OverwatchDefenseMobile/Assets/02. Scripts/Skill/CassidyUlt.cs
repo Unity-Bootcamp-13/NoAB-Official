@@ -19,14 +19,14 @@ public class CassidyUlt : MonoBehaviour
     internal static float currentUltPoint;
     private UltimateSettings _deadeye;
     private bool _isUltActive = false;
-    private float _aimingTimer;
     private float _tumbleweedTimer = 0;
 
     public bool IsUltActive { get { return _isUltActive; } }
+    public bool isUltimatePossible { get { return currentUltPoint >= _deadeye.maxUltimatePoint; } }
 
     private void Awake()
     {
-        currentUltPoint = 0;
+        currentUltPoint = 1500;
         TumbleweedRB.gameObject.SetActive(false);
     }
 
@@ -42,9 +42,8 @@ public class CassidyUlt : MonoBehaviour
 
     private void Update()
     {
-        currentUltPoint = 1800;
-
-        IncreaseUltPointPerSecond();
+        if (!_isUltActive)
+            IncreaseUltPointPerSecond();
 
         _tumbleweedTimer += Time.deltaTime;
 
@@ -58,11 +57,6 @@ public class CassidyUlt : MonoBehaviour
 
         TrackInput();
         IncreaseDamage();
-               
-        _aimingTimer += Time.deltaTime;
-        
-        // if (_aimingTimer >= 7f)
-        // 궁 실행 취소로 수정 OnUltimateButtonUp();
     }
 
     public void OnFirstUltimateButtonInput()
@@ -75,8 +69,8 @@ public class CassidyUlt : MonoBehaviour
 
         UltStartSound.Play();
 
+        currentUltPoint = 0;
         _isUltActive = true;
-        _aimingTimer = 0;
 
         _sortedTargets.Clear();
         _damageTimers.Clear();
@@ -104,7 +98,6 @@ public class CassidyUlt : MonoBehaviour
             CreateUltMarker(entry.zomnic);
         }
 
-        StartUltEffect();
         RollTumbleweed();
     }
 
@@ -115,7 +108,6 @@ public class CassidyUlt : MonoBehaviour
         UltStartSound.Stop();
 
         FireUltimate();
-        EndUltEffect();
 
         foreach (var zomnic in _ultMarkers.Keys)
         {
@@ -203,18 +195,6 @@ public class CassidyUlt : MonoBehaviour
 
         if (currentUltPoint >= _deadeye.maxUltimatePoint)
             _deadeye.isUltimatePossible = true;
-    }
-
-    private void StartUltEffect()
-    {
-        // 캐서디의 이속감소
-    }
-
-    private void EndUltEffect()
-    {
-        currentUltPoint = 0;
-        // 재장전 - 시작 혹은 끝에 
-        // 캐서디의 이속회복
     }
 
     public bool IsObjectVisibleToCamera(GameObject go)
