@@ -2,6 +2,8 @@ using TMPro;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Mono.Cecil.Cil;
+using Unity.VisualScripting;
 
 public class UIManager : MonoBehaviour
 {
@@ -9,6 +11,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playTimer;
     [SerializeField] private Slider baseHpBar;
     [SerializeField] private Cassidy cassidy;
+
+    // possibleTurn effect
+    [SerializeField] private GameObject combatrollPossibleTurnEffect;
+    [SerializeField] private GameObject flashbangPossibleTurnEffect;
+    [SerializeField] private GameObject ultPossibleTurnEffect;
+    [SerializeField] private AudioSource skillPossibleTurnSound;
+    [SerializeField] private AudioSource ultPossibleTurnSound;    
+   
     // peacekeeper
     [SerializeField] private TextMeshProUGUI peacekeeperCurrentBullet;
     // combatroll
@@ -25,8 +35,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private CassidyUlt cassidyUlt;
     [SerializeField] private Image ultPannelImage;
     [SerializeField] private ParticleSystem dustParticle;
+    
     [SerializeField] private GameObject ultimatePossible;
     [SerializeField] private GameObject ultEffect;
+
+    private bool hasTriggeredCombatEffect = false;
+    private bool hasTriggeredFlashbangEffect = false;
 
     private float combatRollTimer;
     private bool setCombatRollTimer;
@@ -74,20 +88,28 @@ public class UIManager : MonoBehaviour
             {
                 combatRollTimer -= Time.deltaTime;
                 combatRollSlider.value += Time.deltaTime;
-                combatRollText.text = ((int)combatRollTimer).ToString();
+                combatRollText.text = Mathf.CeilToInt(combatRollTimer).ToString();
+
+                if (combatRollTimer <= 0f && !hasTriggeredCombatEffect)
+                {
+                    StartCoroutine(C_SkillPossibleTurnEffect(combatrollPossibleTurnEffect, skillPossibleTurnSound));
+                    hasTriggeredCombatEffect = true;
+                }
             }
             else
-            {
+            {                
                 combatRollText.gameObject.SetActive(true);
                 combatRollTimer = cassidy.combatRoll.skillCoolTime;
                 setCombatRollTimer = true;
+                hasTriggeredCombatEffect = false;
             }
         }
         else
         {
-            combatRollText.gameObject.SetActive(false);
-            setCombatRollTimer = false;
+            combatRollText.gameObject.SetActive(false);          
             combatRollSlider.value = 0;
+            setCombatRollTimer = false;
+            hasTriggeredCombatEffect = false;
         }
 
         // flashbang
@@ -97,13 +119,20 @@ public class UIManager : MonoBehaviour
             {
                 flashbangTimer -= Time.deltaTime;
                 flashbangSlider.value += Time.deltaTime;
-                flashbangText.text = ((int)flashbangTimer).ToString();
+                flashbangText.text = Mathf.CeilToInt(flashbangTimer).ToString();
+                
+                if (flashbangTimer <= 0.2f && !hasTriggeredFlashbangEffect)
+                {
+                    StartCoroutine(C_SkillPossibleTurnEffect(flashbangPossibleTurnEffect, skillPossibleTurnSound));
+                    hasTriggeredFlashbangEffect = true;
+                }
             }
             else
             {
                 flashbangText.gameObject.SetActive(true);
                 flashbangTimer = cassidy.flashbang.skillCoolTime;
                 setFlashbangTimer = true;
+                hasTriggeredFlashbangEffect = false;
             }
         }
         else
@@ -111,13 +140,24 @@ public class UIManager : MonoBehaviour
             flashbangText.gameObject.SetActive(false);
             flashbangSlider.value = 0;
             setFlashbangTimer = false;
+            hasTriggeredFlashbangEffect = false;
         }
 
         // deadeye
         bool ultPossible = cassidyUlt.isUltimatePossible;
         Debug.Log(ultPossible);
         ultimateGauge.gameObject.SetActive(!ultPossible);
-        ultimatePossible.SetActive(ultPossible);
+        ultimatePossible.SetActive(ultPossible);                       
+           
+        
+            //StartCoroutine(C_SkillPossibleTurnEffect(combatrollPossibleTurnEffect, skillPossibleTurnSound));                    
+
+            // StartCoroutine(C_SkillPossibleTurnEffect(flashbangPossibleTurnEffect, skillPossibleTurnSound));
+
+
+        if (ultPossible && rotateUltEffect == false)
+            StartCoroutine(C_UltPossibleTurnEffect());
+
 
         if (ultPossible && !rotateUltEffect)
         {
@@ -145,6 +185,26 @@ public class UIManager : MonoBehaviour
             dustParticle.Stop();
             dustParticle.Clear();
         }
+    }
+
+    private IEnumerator C_SkillPossibleTurnEffect(GameObject skillEffect, AudioSource turnSound)
+    {
+        skillEffect.SetActive(true);
+        turnSound.Play();
+
+        yield return new WaitForSeconds(turnSound.clip.length);
+
+        skillEffect.SetActive(false);
+    }
+
+    private IEnumerator C_UltPossibleTurnEffect()
+    {        
+        ultPossibleTurnEffect.SetActive(true);
+        ultPossibleTurnSound.Play();
+
+        yield return new WaitForSeconds(ultPossibleTurnSound.clip.length);
+
+        ultPossibleTurnEffect.SetActive(false);
     }
 
     private IEnumerator C_RotateUltEffect()
