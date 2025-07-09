@@ -4,16 +4,23 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 6f;
+    
     [SerializeField] private CharacterController characterController;
+    [SerializeField] private CassidyUlt cassidyUlt;
     internal Vector3 MoveDir;
     private Vector2 _inputVector;
     internal float gravity = 1f;
+    private float moveSpeed = 6f;
     private float y_velocity = 0;
        
     private void Update()
     {
-        y_velocity += gravity * Time.deltaTime;
+        if (cassidyUlt.IsUltActive)
+            moveSpeed = 1f;
+        else
+            moveSpeed = 6f;
+
+            y_velocity += gravity * Time.deltaTime;
 
         // 입력에 따라 방향 계산
         Vector3 forward = Camera.main.transform.forward;

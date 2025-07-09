@@ -39,7 +39,7 @@ public class Cassidy : Character
     {
         id = 10002,
         speed = 30f,
-        lifetime = 7f,
+        lifetime = 1f,
         damage = 50,
         useGravity = true,
         collisionDetectionMode = CollisionDetectionMode.Discrete
@@ -76,6 +76,7 @@ public class Cassidy : Character
         cassidyUlt.InjectUltimateSettings(deadeye);
     }
 
+
     private void Update()
     {       
         if (Keyboard.current.rKey.wasPressedThisFrame)
@@ -83,10 +84,11 @@ public class Cassidy : Character
             NormalAttack();
         }
 
-
         // 스킬 1 - 섬광탄
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
+            if (isRolling)
+                return;
             Skill_Flashbang(); 
         }
 
@@ -104,6 +106,7 @@ public class Cassidy : Character
 
         if (Keyboard.current.qKey.wasReleasedThisFrame)
         {
+            peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
             cassidyUlt.OnSecondUltimateButtonInput();
         }
 
@@ -111,14 +114,17 @@ public class Cassidy : Character
         //     NormalAttack();
     }
 
+
     public void OnPointerDown()
     {
         cassidyUlt.OnFirstUltimateButtonInput();
     }
 
+
     public void OnPointerUp()
     {
-        cassidyUlt.OnSecondUltimateButtonInput();
+        peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
+        cassidyUlt.OnSecondUltimateButtonInput();        
     }
 
 
@@ -139,6 +145,7 @@ public class Cassidy : Character
         }
     }
 
+
     public IEnumerator C_NormalAtk(RaycastHit hit)
     {
         if (!peacekeeper.isSkillPossible)
@@ -154,7 +161,7 @@ public class Cassidy : Character
 
         if (peacekeeperCurrentBulletCount <= 0)
         {
-            StartCoroutine(C_PeacekeeperReload());
+            Reload();
             yield break;
         }
         else
@@ -163,10 +170,12 @@ public class Cassidy : Character
         peacekeeper.isSkillPossible = true;
     }
 
+
     public void Reload()
     {
         StartCoroutine(C_PeacekeeperReload());
     }
+
 
     public IEnumerator C_PeacekeeperReload()
     {
@@ -179,10 +188,18 @@ public class Cassidy : Character
         peacekeeper.isSkillPossible = true;
     }     
   
+
     public void Skill_Flashbang()
     {
+        if (isRolling)
+            return;
+
+        if (cassidyUlt.IsUltActive)
+            return;
+
         StartCoroutine(C_flashbang());
     }
+
 
     private IEnumerator C_flashbang()
     {
@@ -198,10 +215,15 @@ public class Cassidy : Character
         flashbang.isSkillPossible = true;
     }
 
+
     public void Skill_CombatRoll()
     {
+        if (cassidyUlt.IsUltActive)
+            return;
+
         StartCoroutine(C_Rolling(playerMovement.MoveDir));
     }
+
 
     private IEnumerator C_Rolling(Vector3 inputVector)
     {

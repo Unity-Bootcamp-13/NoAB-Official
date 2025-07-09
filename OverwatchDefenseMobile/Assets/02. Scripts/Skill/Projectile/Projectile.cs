@@ -67,7 +67,12 @@ public class Projectile : MonoBehaviour
 
         if (Time.time - _spawnTime > _lifetime)
         {
-            Release();
+            _lifetime = 9999;
+
+            if (_id == 10001)
+                Release();
+            else if (_id == 10002)
+                StartCoroutine(C_PlayEffect());
         }
     }
 
@@ -88,14 +93,14 @@ public class Projectile : MonoBehaviour
                 zomnic.TakeDamage(_damage);
                 zomnic.isSlowed = true;
             }
-
+            
             StartCoroutine(C_PlayEffect());
         }  
     }
 
     private void Release()
     {
-        if (_isReleased) return;
+        if (_isReleased) return;        
 
         _isReleased = true;
         _projectilePoolManager.ReturnProjectile(this);
