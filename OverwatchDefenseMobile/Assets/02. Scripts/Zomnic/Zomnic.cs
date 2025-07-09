@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(NavMeshAgent), typeof(Collider))]
 public class Zomnic : MonoBehaviour
@@ -10,11 +11,15 @@ public class Zomnic : MonoBehaviour
     [SerializeField] private Vector3 basePoint;
     [SerializeField] private Animator animator;
     [SerializeField] private Transform headTransform;
+    [SerializeField] private Slider hpSlider;
+    [SerializeField] private AudioSource hurtSound;
+
     public Transform GetHeadTransform() => headTransform;
 
     private int _maxHp = 450;
     private int _currentHp;
     private ZomnicPoolManager _zomnicPoolManager;
+    private bool isFirstDamaged = true;
 
     public Vector3 BasePoint { get { return basePoint; } }
     public int MaxHP { get { return _maxHp; } }
@@ -28,6 +33,7 @@ public class Zomnic : MonoBehaviour
 
     private void OnEnable()
     {
+        hpSlider.gameObject.SetActive(false);
         _currentHp = _maxHp;
         animator.Rebind();
         animator.Update(0f);
@@ -43,6 +49,10 @@ public class Zomnic : MonoBehaviour
             StartCoroutine(TakeFlashbang());
             isSlowed = false;
         }
+
+        hpSlider.maxValue = _maxHp;
+        hpSlider.value = _currentHp;
+        hpSlider.transform.forward = Camera.main.transform.forward;
     }
 
     public IEnumerator MoveToBasePoint()
@@ -58,18 +68,26 @@ public class Zomnic : MonoBehaviour
     }
 
     public void TakeDamage(int damage)
-    {
+    {         
         if (IsDead)
             return;
 
-        if (_currentHp < damage)
-            damage = _currentHp;
+        if (isFirstDamaged)
+        {
+            isFirstDamaged = false;
+            hpSlider.gameObject.SetActive(true);
+        }
 
-        Debug.Log("takedamageµé¾î¿È");
+        hurtSound.Play();
+
+        if (_currentHp < damage)
+            damage = _currentHp;        
         
         _currentHp -= damage;
         OnZomnicDamaged?.Invoke(damage);
-        Debug.Log($"{_currentHp}");
+        
+        if (_currentHp <= 0)
+            hpSlider.gameObject.SetActive(false);
                 
         animator.SetBool("isMoving", false);
         animator.SetBool("isSelfDestructing", false);
