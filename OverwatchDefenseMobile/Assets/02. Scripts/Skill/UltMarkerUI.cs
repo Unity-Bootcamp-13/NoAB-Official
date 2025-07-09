@@ -7,7 +7,7 @@ public class UltMarkerUI : MonoBehaviour
 
     private Zomnic _zomnic;
     private Transform targetTransform;
-    private float _scale;
+    public float _scale;
 
     public void Init(Zomnic zomnic, Transform headTransform)
     {
@@ -16,29 +16,24 @@ public class UltMarkerUI : MonoBehaviour
         _scale = 0;
     }
 
-    public void UpdateDamage(float damage)
-    {
-        Debug.Log($"좀닉 현재 체력 {_zomnic.CurrentHP}");
-        Debug.Log($"damage {damage}");
-
-        if (damage >= _zomnic.CurrentHP)
-            _scale = 1f;
-        else
-            _scale = 0f;        
-      
-        skullImage.rectTransform.localScale = Vector3.one * _scale;
-    }
 
     private void Update()
     {
-        if (targetTransform == null)
+        if (!_zomnic.gameObject.activeSelf)
         {
-            Destroy(gameObject);
+            skullImage.rectTransform.localScale = Vector3.zero;
             return;
         }
 
         Vector3 worldPos = targetTransform.position;
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+
+        if (screenPos.z < 0f)
+        {
+            skullImage.rectTransform.localScale = Vector3.zero;
+            return;
+        }
+
         transform.position = screenPos;
     }
 }
