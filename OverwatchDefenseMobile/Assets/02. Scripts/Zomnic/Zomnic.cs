@@ -14,6 +14,12 @@ public class Zomnic : MonoBehaviour
     [SerializeField] private Slider hpSlider;
     [SerializeField] private AudioSource hurtSound;
 
+    [Header("Stuck Recovery")]
+    [SerializeField] private float stuckThreshold = 3f;    // 몇 초 동안 가만히 있으면 재이동
+    [SerializeField] private float movementEpsilon = 0.05f; // 위치 변화 감지 최소값
+    private float stuckTimer = 0f;
+    private Vector3 lastPosition;
+
     public Transform GetHeadTransform() => headTransform;
 
     private int _maxHp = 450;
@@ -40,6 +46,9 @@ public class Zomnic : MonoBehaviour
         animator.Rebind();
         animator.Update(0f);
         isSlowed = false;
+        registerRank = false;
+        lastPosition = transform.position;
+        stuckTimer = 0f;
 
         StartCoroutine(MoveToBasePoint());
     }
@@ -57,6 +66,24 @@ public class Zomnic : MonoBehaviour
             GameManager.ZomnicKillCount++;
         }
 
+        float delta = Vector3.Distance(transform.position, lastPosition);
+        if (delta < movementEpsilon && agent.enabled && agent.isOnNavMesh)
+        {
+            stuckTimer += Time.deltaTime;
+            if (stuckTimer >= stuckThreshold)
+            {
+                // 재이동
+                StartCoroutine(MoveToBasePoint());
+                stuckTimer = 0f;
+            }
+        }
+        else
+        {
+            // 움직였으면 타이머 초기화
+            stuckTimer = 0f;
+        }
+        lastPosition = transform.position;
+
         hpSlider.maxValue = _maxHp;
         hpSlider.value = _currentHp;
         hpSlider.transform.forward = Camera.main.transform.forward;
@@ -64,10 +91,8 @@ public class Zomnic : MonoBehaviour
 
     public IEnumerator MoveToBasePoint()
     {
+        agent.enabled = false;
         agent.Warp(transform.position);
-
-        if (agent.isOnNavMesh == false)
-            StopCoroutine(MoveToBasePoint());
 
         yield return null;
         agent.enabled = true;
