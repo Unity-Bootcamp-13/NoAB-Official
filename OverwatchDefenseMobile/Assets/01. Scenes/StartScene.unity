@@ -625,6 +625,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nicknamePanelPrefab: {fileID: 8045767100747784625, guid: e8665df9866335d40b376b1df6bea5a3, type: 3}
   uiParent: {fileID: 1598485391979068536}
+  mainProfileName: {fileID: 2116759443467521031}
+  profileName: {fileID: 4972910840863353740}
+  matchName: {fileID: 4316939197421757474}
   loginErrorPanelPrefab: {fileID: 2771215273283405477, guid: c5649ff7797b0a9459794adbd83df252, type: 3}
   forceShowNicknameUI: 1
 --- !u!4 &1491913519
@@ -1952,9 +1955,9 @@ RectTransform:
   - {fileID: 9007848562091112493}
   m_Father: {fileID: 2788967045950291197}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 673.9669, y: -85}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 440.1874, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &193364392311700740
@@ -2472,6 +2475,7 @@ MonoBehaviour:
   _profilePortrait: {fileID: 8909445346163130823}
   _mainPlayerPortrait: {fileID: 5511985350354438088}
   _mainProfilePortrait: {fileID: 6032493484204356917}
+  _entryImage: {fileID: 0}
 --- !u!1 &318745059706354229
 GameObject:
   m_ObjectHideFlags: 0
@@ -3683,6 +3687,7 @@ MonoBehaviour:
   _profilePortrait: {fileID: 8909445346163130823}
   _mainPlayerPortrait: {fileID: 5511985350354438088}
   _mainProfilePortrait: {fileID: 6032493484204356917}
+  _entryImage: {fileID: 0}
 --- !u!1 &540423228779867324
 GameObject:
   m_ObjectHideFlags: 0
@@ -10328,9 +10333,9 @@ RectTransform:
   - {fileID: 3641500959624108268}
   m_Father: {fileID: 2788967045950291197}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1144.0607, y: -85}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 500, y: 167.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1718354946785273267
@@ -15665,6 +15670,7 @@ MonoBehaviour:
   _profilePortrait: {fileID: 8909445346163130823}
   _mainPlayerPortrait: {fileID: 5511985350354438088}
   _mainProfilePortrait: {fileID: 6032493484204356917}
+  _entryImage: {fileID: 0}
 --- !u!224 &2788967045950291197
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18689,7 +18695,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &3393344761248315537
 GameObject:
   m_ObjectHideFlags: 0
@@ -27015,6 +27021,7 @@ MonoBehaviour:
   _profilePortrait: {fileID: 8909445346163130823}
   _mainPlayerPortrait: {fileID: 5511985350354438088}
   _mainProfilePortrait: {fileID: 6032493484204356917}
+  _entryImage: {fileID: 0}
 --- !u!1 &4773820399236227417
 GameObject:
   m_ObjectHideFlags: 0
@@ -27921,7 +27928,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 2
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -31583,7 +31590,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5564083307038305550
 Transform:
   m_ObjectHideFlags: 0
@@ -32138,6 +32145,7 @@ MonoBehaviour:
   _profilePortrait: {fileID: 8909445346163130823}
   _mainPlayerPortrait: {fileID: 5511985350354438088}
   _mainProfilePortrait: {fileID: 6032493484204356917}
+  _entryImage: {fileID: 0}
 --- !u!1 &5637411861444289460
 GameObject:
   m_ObjectHideFlags: 0
@@ -42595,9 +42603,9 @@ RectTransform:
   - {fileID: 694514404416275931}
   m_Father: {fileID: 2788967045950291197}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1639.0607, y: -85}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 490, y: 168.42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7480080056291185058
@@ -46902,9 +46910,9 @@ RectTransform:
   - {fileID: 5621197736591198662}
   m_Father: {fileID: 2788967045950291197}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 346.99628, y: -85}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 213.7539, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &8382506945153761580
@@ -47390,6 +47398,7 @@ MonoBehaviour:
   _profilePortrait: {fileID: 8909445346163130823}
   _mainPlayerPortrait: {fileID: 5511985350354438088}
   _mainProfilePortrait: {fileID: 6032493484204356917}
+  _entryImage: {fileID: 0}
 --- !u!222 &8435430734755584389
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -48712,9 +48721,9 @@ RectTransform:
   - {fileID: 1078131221015679614}
   m_Father: {fileID: 2788967045950291197}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 123.02933, y: -85}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 234.18, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8642428334573243396

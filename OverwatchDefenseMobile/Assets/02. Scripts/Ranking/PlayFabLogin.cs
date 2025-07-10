@@ -17,6 +17,9 @@ public class PlayFabGuidLoginWithNickname : MonoBehaviour
     public GameObject nicknamePanelPrefab;
     [Tooltip("UI를 붙일 부모 Canvas 또는 UI Parent")]
     public Transform uiParent;
+    public TextMeshProUGUI mainProfileName;
+    public TextMeshProUGUI profileName;
+    public TextMeshProUGUI matchName;
 
     [Header("Login Error UI")]
     [Tooltip("로그인 실패 시 표시할 경고 메시지 Prefab")]
@@ -104,5 +107,10 @@ public class PlayFabGuidLoginWithNickname : MonoBehaviour
         PlayFabClientAPI.UpdateUserTitleDisplayName(setNameRequest,
             _ => { if (nicknamePanelInstance != null) Destroy(nicknamePanelInstance); },
             err => Debug.LogError("닉네임 설정 실패: " + err.GenerateErrorReport()));
+
+        mainProfileName.text = nicknameInput.text;
+        profileName.text = nicknameInput.text;
+        matchName.text = nicknameInput.text;
+
     }
 }
