@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -12,15 +13,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject DefeatEffect;
     [SerializeField] TextMeshProUGUI DefeatText;
 
-    [SerializeField] AudioSource VictorySound;
-    [SerializeField] AudioSource DefeatSound;
-    [SerializeField] AudioSource Remain10sSound;
-    [SerializeField] AudioSource Remain30sSound;
+    [SerializeField] private AudioMixer audioMixer;
+    [SerializeField] private AudioSource VictorySound;
+    [SerializeField] private AudioSource VictoryEffectSound;
+    [SerializeField] private AudioSource DefeatSound;
+    [SerializeField] private AudioSource DefeatEffectSound;
+    [SerializeField] private AudioSource Remain10sSound;
+    [SerializeField] private AudioSource Remain30sSound;
+
 
     internal float PlayTime = 150;
     private bool _isGameEnded = false;
     private bool _remain30 = false;
     private bool _remain10 = false;
+    private AudioMixerSnapshot muteOn, muteOff;
+
+    private void Awake()
+    {
+        muteOn = audioMixer.FindSnapshot("MuteOn");
+        muteOff = audioMixer.FindSnapshot("MuteOff");
+    }
 
     private void Update()
     {
@@ -51,14 +63,14 @@ public class GameManager : MonoBehaviour
             _isGameEnded = true;
             StartCoroutine(Victory());
         }
-
-
     }
 
     private IEnumerator Victory()
-    {
+    {      
         VictoryPanel.SetActive(true);
+        muteOn.TransitionTo(0f);
 
+        VictoryEffectSound.Play();
         yield return new WaitForSeconds(1.5f);
         VictoryText.gameObject.SetActive(true);
         VictorySound.Play();
@@ -66,14 +78,17 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(VictorySound.clip.length);
         VictoryEffect.SetActive(false);
 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(2);        
+        muteOff.TransitionTo(0f);
         SceneManager.LoadScene("StartScene");
     }
 
     private IEnumerator Defeat()
     {
         DefeatPanel.SetActive(true);
+        muteOn.TransitionTo(0f);
 
+        DefeatEffectSound.Play();
         yield return new WaitForSeconds(1.5f);
         DefeatText.gameObject.SetActive(true);
         DefeatSound.Play();
@@ -82,6 +97,7 @@ public class GameManager : MonoBehaviour
         DefeatEffect.SetActive(false);
 
         yield return new WaitForSeconds(2);
+        muteOff.TransitionTo(0f);
         SceneManager.LoadScene("StartScene");
     }
 }
