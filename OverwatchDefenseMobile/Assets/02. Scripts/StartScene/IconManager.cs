@@ -6,6 +6,7 @@ public class IconManager : MonoBehaviour
     [SerializeField] private Image _profilePortrait;
     [SerializeField] private Image _mainPlayerPortrait;
     [SerializeField] private Image _mainProfilePortrait;
+    public static Sprite PlayerIcon;
 
     public void ImageChange(Image clickedPortrait)
     {
@@ -14,6 +15,7 @@ public class IconManager : MonoBehaviour
         _profilePortrait.sprite = newSprite;
         _mainPlayerPortrait.sprite = newSprite;
         _mainProfilePortrait.sprite = newSprite;
+        PlayerIcon = newSprite;
     }
 }
 
