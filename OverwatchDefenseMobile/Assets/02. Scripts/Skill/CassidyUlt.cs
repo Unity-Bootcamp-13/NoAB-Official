@@ -18,15 +18,15 @@ public class CassidyUlt : MonoBehaviour
 
     internal static float currentUltPoint;
     private UltimateSettings _deadeye;
-    private bool _isUltActive = false;
+    internal bool _isUltActive = false;
     private float _tumbleweedTimer = 0;
 
-    public bool IsUltActive { get { return _isUltActive; } }
+    public bool IsUltActive { get { return _isUltActive; }}
     public bool isUltimatePossible { get { return currentUltPoint >= _deadeye.maxUltimatePoint; } }
 
     private void Awake()
     {
-        currentUltPoint = 0;
+        currentUltPoint = 1500;
         TumbleweedRB.gameObject.SetActive(false);
     }
 
