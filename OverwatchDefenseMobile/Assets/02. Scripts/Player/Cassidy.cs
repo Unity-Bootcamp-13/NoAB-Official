@@ -21,6 +21,7 @@ public class Cassidy : Character
     internal int peacekeeperCurrentBulletCount;
     internal static bool isRolling = false;
     internal bool normalAtk = false;
+    private float _ultStartTime;
 
     [Header("Peacekeeper")]
     public ProjectileSettings peacekeeperBullet = new ProjectileSettings
@@ -114,12 +115,18 @@ public class Cassidy : Character
         // 궁극기
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
+            _ultStartTime = Time.time;
+            peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
             cassidyUlt.OnFirstUltimateButtonInput();
+        }
+
+        if ((Time.time - _ultStartTime) > 7f)
+        {
+            cassidyUlt._isUltActive = false;
         }
 
         if (Keyboard.current.qKey.wasReleasedThisFrame)
         {
-            peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
             cassidyUlt.OnSecondUltimateButtonInput();
         }
 
@@ -130,13 +137,14 @@ public class Cassidy : Character
 
     public void OnPointerDown()
     {
+        _ultStartTime = Time.time;
+        peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
         cassidyUlt.OnFirstUltimateButtonInput();
     }
 
 
     public void OnPointerUp()
     {
-        peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
         cassidyUlt.OnSecondUltimateButtonInput();        
     }
 
