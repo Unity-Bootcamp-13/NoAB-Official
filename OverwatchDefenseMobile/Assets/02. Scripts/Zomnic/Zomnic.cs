@@ -74,6 +74,7 @@ public class Zomnic : MonoBehaviour
             {
                 // ¿Á¿Ãµø
                 StartCoroutine(MoveToBasePoint());
+                agent.speed = 3.5f;
                 stuckTimer = 0f;
             }
         }

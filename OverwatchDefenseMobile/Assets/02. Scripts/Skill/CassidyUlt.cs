@@ -22,7 +22,7 @@ public class CassidyUlt : MonoBehaviour
     private float _tumbleweedTimer = 0;
 
     public bool IsUltActive { get { return _isUltActive; }}
-    public bool isUltimatePossible { get { return currentUltPoint >= _deadeye.maxUltimatePoint; } }
+    public bool IsUltimatePossible { get { return currentUltPoint >= _deadeye.maxUltimatePoint; } }
 
     private void Awake()
     {
@@ -59,7 +59,7 @@ public class CassidyUlt : MonoBehaviour
         IncreaseDamage();
     }
 
-    public void OnFirstUltimateButtonInput()
+    public void OnButtonEnter()
     {
         if (!_deadeye.isUltimatePossible)
         {
@@ -101,7 +101,7 @@ public class CassidyUlt : MonoBehaviour
         RollTumbleweed();
     }
 
-    public void OnSecondUltimateButtonInput()
+    public void OnButtonExit()
     {
         if (!_isUltActive) return;
 

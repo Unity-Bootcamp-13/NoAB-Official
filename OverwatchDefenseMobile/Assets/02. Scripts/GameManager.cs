@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     private bool _remain10 = false;
     private AudioMixerSnapshot muteOn, muteOff;
     public static int ZomnicKillCount;
+    public static bool LogError = false;
     
 
     private void Awake()
@@ -60,12 +61,20 @@ public class GameManager : MonoBehaviour
         {
             _isGameEnded = true;
             StartCoroutine(Defeat());
+            LoadScene("StartScene");
         }
-        else if (PlayTime <= 0)
+        else if (PlayTime <= 0 && !LogError)
         {
             _isGameEnded = true;
             FindFirstObjectByType<PlayFabStatSaver>().SaveHighScoreIfSuccessful(ZomnicKillCount, true);
             StartCoroutine(Victory());
+            LoadScene("RankingScene");
+        }
+        else if (PlayTime <= 0 && LogError)
+        {
+            _isGameEnded = true;
+            StartCoroutine(Victory());
+            LoadScene("StartScene");
         }
 
         if (Cassidy.transform.position.y <= 28)
@@ -76,7 +85,8 @@ public class GameManager : MonoBehaviour
     }
 
     private IEnumerator Victory()
-    {      
+    {
+        ZomnicKillCount = 0;
         VictoryPanel.SetActive(true);
         muteOn.TransitionTo(0f);
 
@@ -90,11 +100,11 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(2);        
         muteOff.TransitionTo(0f);
-        SceneManager.LoadScene("RankingScene");
     }
 
     private IEnumerator Defeat()
     {
+        ZomnicKillCount = 0;
         DefeatPanel.SetActive(true);
         muteOn.TransitionTo(0f);
 
@@ -108,6 +118,10 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(2);
         muteOff.TransitionTo(0f);
-        SceneManager.LoadScene("StartScene");
+    }
+
+    private void LoadScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
     }
 }

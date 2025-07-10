@@ -147,7 +147,7 @@ public class UIManager : MonoBehaviour
         }
 
         // deadeye
-        bool ultPossible = cassidyUlt.isUltimatePossible;
+        bool ultPossible = cassidyUlt.IsUltimatePossible;
         ultimateGauge.gameObject.SetActive(!ultPossible);
         ultimatePossible.SetActive(ultPossible);                       
          
@@ -205,7 +205,7 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator C_RotateUltEffect()
     {
-        while (cassidy.deadeye.isUltimatePossible)
+        while (cassidyUlt.IsUltimatePossible)
         {
             ultEffect.SetActive(true);
             int randomRot = Random.Range(0, 360);
