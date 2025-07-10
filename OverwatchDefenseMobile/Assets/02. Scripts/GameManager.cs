@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject DefeatPanel;
     [SerializeField] GameObject DefeatEffect;
     [SerializeField] TextMeshProUGUI DefeatText;
+    [SerializeField] GameObject Cassidy;
 
     [SerializeField] private AudioMixer audioMixer;
     [SerializeField] private AudioSource VictorySound;

@@ -33,6 +33,7 @@ public class Zomnic : MonoBehaviour
 
     private void OnEnable()
     {
+        isFirstDamaged = true;
         hpSlider.gameObject.SetActive(false);
         _currentHp = _maxHp;
         animator.Rebind();
