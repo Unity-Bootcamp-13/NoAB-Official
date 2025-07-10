@@ -12,6 +12,11 @@ public class Cassidy : Character
     [SerializeField] private AudioSource rollingSound;
     [SerializeField] private AudioSource reloadSound;
     [SerializeField] private GameObject peacekeeperEffect;
+    [SerializeField] private AudioSource StartDialogSound;
+    [SerializeField] private AudioSource flashbangDialogSound;
+    [SerializeField] private AudioClip flashbangvoiceClip1;
+    [SerializeField] private AudioClip flashbangvoiceClip2;
+    [SerializeField] private AudioClip flashbangvoiceClip3;
 
     internal int peacekeeperCurrentBulletCount;
     internal static bool isRolling = false;
@@ -76,6 +81,12 @@ public class Cassidy : Character
     {
         peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
         cassidyUlt.InjectUltimateSettings(deadeye);
+    }
+
+
+    private void Start()
+    {
+        StartDialogSound.Play();
     }
 
 
@@ -215,11 +226,29 @@ public class Cassidy : Character
             Debug.Log("섬광탄 사용불가");
             yield break;
         }
+        PlayRandomFlashbangVoice();
         projectileManager.FireProjectile(Camera.main.transform.position, Camera.main.transform.forward.normalized, flashbangBullet);
         flashbang.isSkillPossible = false;
 
         yield return new WaitForSeconds(flashbang.skillCoolTime);
         flashbang.isSkillPossible = true;
+    }
+
+
+    private void PlayRandomFlashbangVoice()
+    {
+        int idx = Random.Range(0, 3);
+        AudioClip clipToPlay = null;
+
+        switch (idx)
+        {
+            case 0: clipToPlay = flashbangvoiceClip1; break;
+            case 1: clipToPlay = flashbangvoiceClip2; break;
+            case 2: clipToPlay = flashbangvoiceClip3; break;
+        }
+
+        if (clipToPlay != null)
+            flashbangDialogSound.PlayOneShot(clipToPlay);
     }
 
 

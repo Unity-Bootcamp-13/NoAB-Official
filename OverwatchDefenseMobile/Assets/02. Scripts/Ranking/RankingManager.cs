@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using PlayFab.ClientModels;
 using PlayFab;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RankingManager : MonoBehaviour
 {
@@ -29,11 +30,11 @@ public class RankingManager : MonoBehaviour
         PlayFabClientAPI.GetLeaderboard(request,
             result =>
             {
-                List<RankingManager.PlayerResult> results = new List<RankingManager.PlayerResult>();
+                List<PlayerResult> results = new List<PlayerResult>();
 
                 foreach (var entry in result.Leaderboard)
                 {
-                    results.Add(new RankingManager.PlayerResult
+                    results.Add(new PlayerResult
                     {
                         Name = entry.DisplayName ?? "¿Õ∏Ì",
                         KillCount = entry.StatValue
@@ -50,5 +51,10 @@ public class RankingManager : MonoBehaviour
     {
         public string Name;
         public int KillCount;
+    }
+
+    public void LoadScene()
+    {
+        SceneManager.LoadScene("StartScene");
     }
 }

@@ -28,6 +28,8 @@ public class GameManager : MonoBehaviour
     private bool _remain30 = false;
     private bool _remain10 = false;
     private AudioMixerSnapshot muteOn, muteOff;
+    public static int ZomnicKillCount;
+    
 
     private void Awake()
     {
@@ -62,7 +64,14 @@ public class GameManager : MonoBehaviour
         else if (PlayTime <= 0)
         {
             _isGameEnded = true;
+            FindFirstObjectByType<PlayFabStatSaver>().SaveHighScoreIfSuccessful(ZomnicKillCount, true);
             StartCoroutine(Victory());
+        }
+
+        if (Cassidy.transform.position.y <= 28)
+        {
+            _isGameEnded = true;
+            StartCoroutine(Defeat());
         }
     }
 
@@ -81,7 +90,7 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(2);        
         muteOff.TransitionTo(0f);
-        SceneManager.LoadScene("StartScene");
+        SceneManager.LoadScene("RankingScene");
     }
 
     private IEnumerator Defeat()

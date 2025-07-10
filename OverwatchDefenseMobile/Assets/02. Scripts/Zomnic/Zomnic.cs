@@ -29,6 +29,7 @@ public class Zomnic : MonoBehaviour
     public ZomnicPoolManager ZomnicPoolManager { get { return _zomnicPoolManager; } }
     public static event Action<float> OnZomnicDamaged;
     internal bool isSlowed = false;
+    private bool registerRank = false;
 
 
     private void OnEnable()
@@ -49,6 +50,11 @@ public class Zomnic : MonoBehaviour
         {
             StartCoroutine(TakeFlashbang());
             isSlowed = false;
+        }
+        if (IsDead && !registerRank)
+        {
+            registerRank = true;
+            GameManager.ZomnicKillCount++;
         }
 
         hpSlider.maxValue = _maxHp;
