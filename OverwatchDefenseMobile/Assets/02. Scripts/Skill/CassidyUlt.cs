@@ -174,6 +174,8 @@ public class CassidyUlt : MonoBehaviour
 
     public void IncreaseUltPointPerSecond()
     {
+        if (IsUltActive == true) return;
+
         if (currentUltPoint < _deadeye.maxUltimatePoint)
         {
             currentUltPoint += Time.deltaTime * _deadeye.pointPerSecond;
@@ -188,6 +190,8 @@ public class CassidyUlt : MonoBehaviour
 
     public void IncreaseUltPointByDamage(float damage)
     {
+        if (IsUltActive == true) return;
+
         float point = damage * _deadeye.pointPerDamage;
         currentUltPoint = Mathf.Min(currentUltPoint + point, _deadeye.maxUltimatePoint);
 

@@ -68,7 +68,7 @@ public class Cassidy : Character
         pointPerDamage =  1,
         pointPerSecond = 5,
         damagePerSecond = 150,
-        isUltimatePossible = true,
+        isUltimatePossible = false,
     };
 
 
@@ -132,7 +132,7 @@ public class Cassidy : Character
 
     public override void NormalAttack()
     {
-        if (!peacekeeper.isSkillPossible)
+        if (!peacekeeper.isSkillPossible || cassidyUlt.IsUltActive)
             return;
 
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
@@ -229,6 +229,7 @@ public class Cassidy : Character
             return;
 
         StartCoroutine(C_Rolling(playerMovement.MoveDir));
+        peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
     }
 
 

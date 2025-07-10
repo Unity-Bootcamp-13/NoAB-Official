@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject DefeatPanel;
     [SerializeField] GameObject DefeatEffect;
     [SerializeField] TextMeshProUGUI DefeatText;
+    [SerializeField] GameObject Cassidy;
 
     [SerializeField] AudioSource VictorySound;
     [SerializeField] AudioSource DefeatSound;
@@ -52,7 +53,11 @@ public class GameManager : MonoBehaviour
             StartCoroutine(Victory());
         }
 
-
+        if (Cassidy.transform.position.y <= 28)
+        {
+            _isGameEnded = true;
+            StartCoroutine(Defeat());
+        }
     }
 
     private IEnumerator Victory()
