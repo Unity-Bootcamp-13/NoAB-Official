@@ -61,20 +61,12 @@ public class GameManager : MonoBehaviour
         {
             _isGameEnded = true;
             StartCoroutine(Defeat());
-            LoadScene("StartScene");
         }
-        else if (PlayTime <= 0 && !LogError)
+        else if (PlayTime <= 0)
         {
             _isGameEnded = true;
             FindFirstObjectByType<PlayFabStatSaver>().SaveHighScoreIfSuccessful(ZomnicKillCount, true);
             StartCoroutine(Victory());
-            LoadScene("RankingScene");
-        }
-        else if (PlayTime <= 0 && LogError)
-        {
-            _isGameEnded = true;
-            StartCoroutine(Victory());
-            LoadScene("StartScene");
         }
 
         if (Cassidy.transform.position.y <= 28)
@@ -100,6 +92,11 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(2);        
         muteOff.TransitionTo(0f);
+
+        if (!LogError)
+            LoadScene("RankingScene");
+        else
+            LoadScene("StartScene");
     }
 
     private IEnumerator Defeat()
@@ -118,6 +115,7 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(2);
         muteOff.TransitionTo(0f);
+        LoadScene("StartScene");
     }
 
     private void LoadScene(string sceneName)
