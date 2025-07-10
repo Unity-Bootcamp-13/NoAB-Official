@@ -1,6 +1,5 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class RankingUI : MonoBehaviour
@@ -18,9 +17,9 @@ public class RankingUI : MonoBehaviour
             GameObject entry = Instantiate(entryPrefab, contentParent);
             var texts = entry.GetComponentsInChildren<TextMeshProUGUI>();
 
-            texts[0].text = $"{i + 1}위";
+            texts[0].text = $"{i + 1}";
             texts[1].text = sortedList[i].Name;
-            texts[2].text = $"{sortedList[i].KillCount}킬";
+            texts[2].text = $"좀닉 {sortedList[i].KillCount}킬";
         }
     }
 }

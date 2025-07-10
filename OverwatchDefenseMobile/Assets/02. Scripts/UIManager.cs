@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playTimer;
     [SerializeField] private Slider baseHpBar;
     [SerializeField] private Cassidy cassidy;
+    [SerializeField] private TextMeshProUGUI zomnicKillCount;
 
     // possibleTurn effect
     [SerializeField] private GameObject combatrollPossibleTurnEffect;
@@ -72,6 +73,9 @@ public class UIManager : MonoBehaviour
 
         // baseHp
         baseHpBar.value = BaseHp.currentHp;
+
+        // zomnicKillCount
+        zomnicKillCount.text = $"Á»´Ð {GameManager.ZomnicKillCount}Å³";
 
         // peacekeeper
         peacekeeperCurrentBullet.text = cassidy.peacekeeperCurrentBulletCount.ToString();
@@ -144,7 +148,6 @@ public class UIManager : MonoBehaviour
 
         // deadeye
         bool ultPossible = cassidyUlt.isUltimatePossible;
-        Debug.Log(ultPossible);
         ultimateGauge.gameObject.SetActive(!ultPossible);
         ultimatePossible.SetActive(ultPossible);                       
          

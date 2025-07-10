@@ -26,7 +26,7 @@ public class CassidyUlt : MonoBehaviour
 
     private void Awake()
     {
-        currentUltPoint = 1500;
+        currentUltPoint = 0;
         TumbleweedRB.gameObject.SetActive(false);
     }
 
