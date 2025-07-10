@@ -71,6 +71,7 @@ public class PlayFabGuidLoginWithNickname : MonoBehaviour
     private void OnLoginError(PlayFabError error)
     {
         Debug.LogError("PlayFab ¿¡·¯: " + error.GenerateErrorReport());
+        GameManager.LogError = true;
         ShowLoginError();
     }
 

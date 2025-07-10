@@ -5,7 +5,7 @@ public class ZomnicController : MonoBehaviour
     [SerializeField] private Zomnic zomnic;
 
     [Header("Base Arrival Detection Range")]
-    [SerializeField] private float baseRange = 1.0f;
+    [SerializeField] private float baseRange = 3.0f;
 
     [Header("SelfDesturct switch waiting time after arrive to the Base")]
     [SerializeField] private float selfDestructDelay = 2.0f;

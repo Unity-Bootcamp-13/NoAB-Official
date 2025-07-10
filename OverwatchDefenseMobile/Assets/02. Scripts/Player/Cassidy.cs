@@ -75,6 +75,7 @@ public class Cassidy : Character
         pointPerSecond = 5,
         damagePerSecond = 150,
         isUltimatePossible = false,
+        ultDuration = 7
     };
 
 
@@ -93,16 +94,15 @@ public class Cassidy : Character
 
     private void Update()
     {       
+        // 기본 공격
         if (Keyboard.current.rKey.wasPressedThisFrame)
         {
             NormalAttack();
         }
 
         // 스킬 1 - 섬광탄
-        if (Keyboard.current.eKey.wasPressedThisFrame)
+        if (Keyboard.current.eKey.wasPressedThisFrame && !isRolling)
         {
-            if (isRolling)
-                return;
             Skill_Flashbang(); 
         }
 
@@ -117,21 +117,21 @@ public class Cassidy : Character
         {
             _ultStartTime = Time.time;
             peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
-            cassidyUlt.OnFirstUltimateButtonInput();
+            cassidyUlt.OnButtonEnter();
         }
 
-        if ((Time.time - _ultStartTime) > 7f)
+        if ((Time.time - _ultStartTime) > deadeye.ultDuration)
         {
             cassidyUlt._isUltActive = false;
         }
 
         if (Keyboard.current.qKey.wasReleasedThisFrame)
         {
-            cassidyUlt.OnSecondUltimateButtonInput();
+            cassidyUlt.OnButtonExit();
         }
 
         if (peacekeeper.isSkillPossible)
-             NormalAttack();
+            NormalAttack();
     }
 
 
@@ -139,13 +139,13 @@ public class Cassidy : Character
     {
         _ultStartTime = Time.time;
         peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
-        cassidyUlt.OnFirstUltimateButtonInput();
+        cassidyUlt.OnButtonEnter();
     }
 
 
     public void OnPointerUp()
     {
-        cassidyUlt.OnSecondUltimateButtonInput();        
+        cassidyUlt.OnButtonExit();        
     }
 
 
@@ -177,7 +177,6 @@ public class Cassidy : Character
         peacekeeperCurrentBulletCount--;
         peacekeeperEffect.SetActive(true);
 
-        Debug.Log("총알 발사");
         Zomnic zomnic = hit.collider.GetComponent<Zomnic>();
         zomnic.TakeDamage(peacekeeperBullet.damage);
         yield return new WaitForSeconds(0.15f);
@@ -207,10 +206,8 @@ public class Cassidy : Character
     {
         reloadSound.Play();
         peacekeeper.isSkillPossible = false;
-        Debug.Log("재장전");
         yield return new WaitForSeconds(peacekeeper.bulletReloadTime);
         peacekeeperCurrentBulletCount = peacekeeper.bulletInitCount;
-        Debug.Log("재장전 완료");
         peacekeeper.isSkillPossible = true;
     }     
   
@@ -230,10 +227,7 @@ public class Cassidy : Character
     private IEnumerator C_flashbang()
     {
         if (!flashbang.isSkillPossible)
-        {
-            Debug.Log("섬광탄 사용불가");
             yield break;
-        }
         PlayRandomFlashbangVoice();
         projectileManager.FireProjectile(Camera.main.transform.position, Camera.main.transform.forward.normalized, flashbangBullet);
         flashbang.isSkillPossible = false;
@@ -273,10 +267,7 @@ public class Cassidy : Character
     private IEnumerator C_Rolling(Vector3 inputVector)
     {
         if (!combatRoll.isSkillPossible)
-        {
-            Debug.Log("구르기 사용불가");
             yield break;
-        }
 
         combatRoll.isSkillPossible = false;
 

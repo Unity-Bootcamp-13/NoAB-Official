@@ -13,5 +13,6 @@ public struct UltimateSettings
     public float pointPerDamage;
     public float pointPerSecond;
     public float damagePerSecond;
+    public float ultDuration;
     public bool isUltimatePossible;
 }

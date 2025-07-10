@@ -7,11 +7,11 @@ public class BaseHp : MonoBehaviour
 
     public static bool GameOver => currentHp <= 0;
 
+
     private void Awake()
     {
         currentHp = maxHp;
     }
-
 
 
     public static void TakeDamage(int damage)
@@ -19,8 +19,6 @@ public class BaseHp : MonoBehaviour
         if (currentHp < damage)
             damage = currentHp;
 
-        currentHp -= damage;
-
-        Debug.Log($"거점 체력 : {currentHp}");      
+        currentHp -= damage; 
     }
 }
