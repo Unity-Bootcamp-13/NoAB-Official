@@ -19,13 +19,14 @@ public class Zomnic : MonoBehaviour
     [SerializeField] private float movementEpsilon = 0.05f; // 위치 변화 감지 최소값
     private float stuckTimer = 0f;
     private Vector3 lastPosition;
-
+    private float initSpeed;
     public Transform GetHeadTransform() => headTransform;
 
     private int _maxHp = 450;
     private int _currentHp;
     private ZomnicPoolManager _zomnicPoolManager;
     private bool isFirstDamaged = true;
+    private bool inSlowingDownCo = false;
 
     public Vector3 BasePoint { get { return basePoint; } }
     public int MaxHP { get { return _maxHp; } }
@@ -40,6 +41,7 @@ public class Zomnic : MonoBehaviour
 
     private void OnEnable()
     {
+        initSpeed = agent.speed;
         isFirstDamaged = true;
         hpSlider.gameObject.SetActive(false);
         _currentHp = _maxHp;
@@ -53,9 +55,14 @@ public class Zomnic : MonoBehaviour
         StartCoroutine(MoveToBasePoint());
     }
 
+    private void OnDisable()
+    {
+
+        agent.speed = initSpeed;
+    }
     private void Update()
     {
-        if (isSlowed)
+        if (isSlowed && _currentHp > 0 && !inSlowingDownCo)
         {
             StartCoroutine(TakeFlashbang());
             isSlowed = false;
@@ -129,11 +136,11 @@ public class Zomnic : MonoBehaviour
 
     public IEnumerator TakeFlashbang()
     {
-        float currentSpeed = agent.speed;
-
+        inSlowingDownCo = true;
         agent.speed = 0;
         yield return new WaitForSeconds(0.9f);
-        agent.speed = currentSpeed;
+        agent.speed = initSpeed;
+        inSlowingDownCo = false;
     }
 
     public void InjectPoolManager(ZomnicPoolManager poolManager)
