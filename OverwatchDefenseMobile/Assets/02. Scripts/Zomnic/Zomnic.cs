@@ -11,6 +11,7 @@ public class Zomnic : MonoBehaviour
     [SerializeField] private Vector3 basePoint;
     [SerializeField] private Animator animator;
     [SerializeField] private Transform headTransform;
+    [SerializeField] private GameObject hpCanvas;
     [SerializeField] private Slider hpSlider;
     [SerializeField] private AudioSource hurtSound;
 
@@ -43,7 +44,7 @@ public class Zomnic : MonoBehaviour
     {
         initSpeed = agent.speed;
         isFirstDamaged = true;
-        hpSlider.gameObject.SetActive(false);
+        hpCanvas.SetActive(false);
         _currentHp = _maxHp;
         animator.Rebind();
         animator.Update(0f);
@@ -57,9 +58,10 @@ public class Zomnic : MonoBehaviour
 
     private void OnDisable()
     {
-
         agent.speed = initSpeed;
+        hpCanvas.SetActive(false);
     }
+
     private void Update()
     {
         if (isSlowed && _currentHp > 0 && !inSlowingDownCo)
@@ -115,9 +117,9 @@ public class Zomnic : MonoBehaviour
         if (isFirstDamaged)
         {
             isFirstDamaged = false;
-            hpSlider.gameObject.SetActive(true);
+            hpCanvas.SetActive(true);
         }
-
+        
         hurtSound.Play();
 
         if (_currentHp < damage)
@@ -125,10 +127,7 @@ public class Zomnic : MonoBehaviour
         
         _currentHp -= damage;
         OnZomnicDamaged?.Invoke(damage);
-        
-        if (_currentHp <= 0)
-            hpSlider.gameObject.SetActive(false);
-                
+                        
         animator.SetBool("isMoving", false);
         animator.SetBool("isSelfDestructing", false);
         animator.SetTrigger("hit");
