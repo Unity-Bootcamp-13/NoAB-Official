@@ -95,7 +95,10 @@ public class Projectile : MonoBehaviour
             }
             
             if (!_isCoStarted)
+            { 
+                _collider.enabled = false; 
                 StartCoroutine(C_PlayFlashbangEffect());
+            }
         }  
     }
 
@@ -115,6 +118,7 @@ public class Projectile : MonoBehaviour
         collisionSound.Play();
         
         yield return new WaitForSeconds(collisionEffect.main.duration);
+        _collider.enabled = true;
         Release();
     }
 }

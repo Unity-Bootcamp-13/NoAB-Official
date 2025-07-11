@@ -214,12 +214,9 @@ public class Cassidy : Character
 
     public void Skill_Flashbang()
     {
-        if (isRolling)
+        if (isRolling || cassidyUlt.IsUltActive)
             return;
-
-        if (cassidyUlt.IsUltActive)
-            return;
-
+                
         StartCoroutine(C_flashbang());
     }
 

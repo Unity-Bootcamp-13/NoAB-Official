@@ -902,8 +902,11 @@ MonoBehaviour:
   basePoint: {x: -14.5, y: 35, z: 64.5}
   animator: {fileID: -7734090304702670029}
   headTransform: {fileID: 4835844063981260142}
+  hpCanvas: {fileID: 1844364306555462747}
   hpSlider: {fileID: 8388753227305830497}
   hurtSound: {fileID: 790761380420641596}
+  stuckThreshold: 3
+  movementEpsilon: 0.05
 --- !u!114 &1268723870520830734
 MonoBehaviour:
   m_ObjectHideFlags: 0
