@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
     {
         ZomnicKillCount = 0;
         VictoryPanel.SetActive(true);
-        muteOn.TransitionTo(0f);
+        muteOn.TransitionTo(0.01f);
 
         VictoryEffectSound.Play();
         yield return new WaitForSeconds(1.5f);
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
         VictoryEffect.SetActive(false);
 
         yield return new WaitForSeconds(2);        
-        muteOff.TransitionTo(0f);
+        muteOff.TransitionTo(0.01f);
 
         if (!LogError)
             LoadScene("RankingScene");
@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
     {
         ZomnicKillCount = 0;
         DefeatPanel.SetActive(true);
-        muteOn.TransitionTo(0f);
+        muteOn.TransitionTo(0.01f);
 
         DefeatEffectSound.Play();
         yield return new WaitForSeconds(1.5f);
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
         DefeatEffect.SetActive(false);
 
         yield return new WaitForSeconds(2);
-        muteOff.TransitionTo(0f);
+        muteOff.TransitionTo(0.01f);
         LoadScene("StartScene");
     }
 
