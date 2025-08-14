@@ -76,7 +76,7 @@ public class Zomnic : MonoBehaviour
         }
 
         float delta = Vector3.Distance(transform.position, lastPosition);
-        if (delta < movementEpsilon && agent.enabled && agent.isOnNavMesh)
+        if (delta < movementEpsilon && agent.enabled && agent.isOnNavMesh && !inSlowingDownCo)
         {
             stuckTimer += Time.deltaTime;
             if (stuckTimer >= stuckThreshold)
